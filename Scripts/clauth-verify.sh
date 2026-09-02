@@ -18,7 +18,7 @@
 set -uo pipefail
 cd "$(dirname "$0")/.."
 export DEVELOPER_DIR="${DEVELOPER_DIR:-/Applications/Xcode.app/Contents/Developer}"
-budget="${CLP_HOOK_BUDGET:?set CLP_HOOK_BUDGET=<n> (the milestone's hook budget)}"
+budget="${CLP_HOOK_BUDGET:?set CLP_HOOK_BUDGET=<n> (the milestone hook budget)}"
 
 step() { printf '\n== %s ==\n' "$1"; }
 fail() { echo "clauth-verify: FAIL — $1"; exit 1; }
