@@ -2,6 +2,8 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+> **This fork (xingfanxia/Pulse) carries a clauth integration** — every clauth-managed account as a ring, plus clauth's control face. Design, rules and the frozen graders: `Docs/clauth/PLAN.md`; the running contract: `Docs/clauth/GOAL-PROMPTS.md`; ledgers under `.agent/`. Everything below is upstream's and stays theirs.
+
 ## What this is
 
 Pulse is a macOS menu-bar app: a floating AI usage monitor. SwiftUI renders the UI; a transparent, non-activating AppKit `NSPanel` anchors it to a side of the screen. It tracks three coding agents — Claude Code, Codex and Antigravity — reading each one's real limits by whatever route that agent offers. There is no backend and no account of its own.
