@@ -21,7 +21,7 @@ total=0
 printf '%-48s %6s %6s\n' "upstream-owned file" "added" "removed"
 while IFS=$'\t' read -r added removed path; do
   case "$path" in
-    Sources/Pulse/Clauth/*|Tests/*|Package.swift|Docs/*|Scripts/clauth-*|*.strings|.agent/*) continue ;;
+    Sources/Pulse/Clauth/*|Tests/*|Package.swift|Makefile|Docs/*|Scripts/clauth-*|*.strings|.agent/*|CLAUDE.md) continue ;;
   esac
   [ "$added" = "-" ] && continue   # binary
   printf '%-48s %6s %6s\n' "$path" "$added" "$removed"

@@ -35,8 +35,13 @@ echo "warnings: $warnings"
 step "2/7 swift test"
 test_log=$(mktemp)
 swift test 2>&1 | tee "$test_log" | grep -E "error:|Executed [0-9]+ tests|failed|passed after" | tail -6
-grep -qE "Executed [0-9]+ tests, with 0 failures" "$test_log" || fail "tests red or no XCTest ran"
-if grep -qE "Executed 0 tests" "$test_log"; then fail "0 tests executed — the test target is not wired"; fi
+rc=${PIPESTATUS[0]}
+echo "swift test exit: $rc"
+[ "$rc" -eq 0 ] || fail "swift test exited $rc"
+# XCTest prints the Executed line PER SUITE, so a green suite line beside a red
+# one is not a pass — any failure count anywhere is red.
+if grep -qE "with [1-9][0-9]* (failure|failures|unexpected)" "$test_log"; then fail "a suite reported failures"; fi
+grep -qE "Executed [1-9][0-9]* tests?, with 0 failures" "$test_log" || fail "no XCTest ran (the test target is not wired)"
 
 step "3/7 localization"
 ./Scripts/check-localization.sh || fail "localization"
@@ -44,14 +49,28 @@ step "3/7 localization"
 step "4/7 hook budget"
 ./Scripts/clauth-hook-budget.sh "$budget" || fail "hook budget"
 
-step "5/7 credential-file names in clauth code (comments allowed, code not)"
-hits=$(grep -rEn 'credentials\.json|codex-auth\.json|session-token|auth\.json|Keychain|SecItem' Sources/Pulse/Clauth 2>/dev/null | grep -vE ':[[:space:]]*(//|/\*|\*)' || true)
-if [ -n "$hits" ]; then echo "$hits"; fail "a credential file or the Keychain is named in code"; fi
+# Gates 5 and 6 scan everything that is OURS: Sources/Pulse/Clauth, Tests,
+# and the ADDED lines of every hook in an upstream-owned file (upstream's own
+# code legitimately reads the CLIs' credentials for its primary accounts and
+# spawns codex/app-server — that is theirs, not under these rails).
+ours_added() {
+  git diff upstream/main -- Sources/Pulse ':(exclude)Sources/Pulse/Clauth' | grep -E '^\+[^+]' | sed 's/^+/hook:+:/' || true
+}
+# A line is a comment when its CONTENT (after the file:line: prefix) starts
+# with //, /* or *. Anchored to the prefix so a `://` inside a string never
+# masquerades as a comment.
+strip_comments() { grep -vE '^[^:]*:[0-9+]*:[[:space:]]*(//|/\*|\*)'; }
+
+step "5/7 credential-file names in our code (comments allowed, code not)"
+cred='credentials\.json|codex-auth\.json|session-token|auth\.json|Keychain|SecItem|\.claude/settings\.json'
+hits=$( { grep -rEn "$cred" Sources/Pulse/Clauth Tests 2>/dev/null; ours_added | grep -E "$cred"; } | strip_comments || true)
+if [ -n "$hits" ]; then echo "$hits"; fail "a credential file, the Keychain, or Claude's settings.json is named in our code"; fi
 echo "none"
 
 step "6/7 process spawns only inside ClauthCLI.swift"
-spawns=$(grep -rln 'Process()' Sources/Pulse/Clauth 2>/dev/null | grep -v 'Sources/Pulse/Clauth/ClauthCLI.swift' || true)
-if [ -n "$spawns" ]; then echo "$spawns"; fail "Process() outside ClauthCLI.swift — every spawn must pass the sandbox refusal"; fi
+spawn='Process\(|launchedProcess|NSTask|posix_spawn|NSWorkspace\.[a-zA-Z.]*(open|launch)'
+spawns=$( { grep -rEn "$spawn" Sources/Pulse/Clauth Tests 2>/dev/null; ours_added | grep -E "$spawn"; } | strip_comments | grep -v '^Sources/Pulse/Clauth/ClauthCLI.swift:' || true)
+if [ -n "$spawns" ]; then echo "$spawns"; fail "a process spawn outside ClauthCLI.swift — every spawn must pass the sandbox refusal"; fi
 echo "none"
 
 step "7/7 upstream release machinery and brand assets untouched"
