@@ -156,8 +156,11 @@ extension ClauthActionsTests {
         actions.installSetupToken("fx-main", token: "  \(mint)\n")
         let a4 = await waitUntil(3) { actions.loginInFlight == nil }; XCTAssertTrue(a4)
         actions.setFeed("fx-main", on: false)
+        // Two CLI spawns fired back to back land in either order; wait for
+        // the feed to be recorded before the delete goes out.
+        let a5 = await waitUntil(3) { recorded.launches.count == 5 }; XCTAssertTrue(a5)
         actions.delete("fx-backup")
-        let a5 = await waitUntil(3) { actions.deleteInFlight == nil && recorded.launches.count == 6 }; XCTAssertTrue(a5)
+        let a6 = await waitUntil(3) { actions.deleteInFlight == nil && recorded.launches.count == 6 }; XCTAssertTrue(a6)
 
         XCTAssertEqual(recorded.launches.map(\.arguments), [
             ["login", "--new", "fx-new"],
