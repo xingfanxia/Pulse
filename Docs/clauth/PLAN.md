@@ -78,6 +78,16 @@ Deliverable: Settings → sidebar "clauth" pane with everything ccsbar's panel d
 - Parity checklist `Docs/clauth/PARITY.md`: every `func` in ccsbar `StatusModelActions.swift`, the `CodexProxyRow` switch, `SessionToken`'s install/replace/clear, checked off with the landing commit or a written reason it is not done (no empty rows).
 - `Scripts/bundle.sh` → `build.noindex/Pulse.app` → `/Applications/Pulse.app`; ccsbar keeps running (retirement is CLP-4).
 
+### CLP-5 — rail semantics: names, active cue, inner weekly ring (AX 2026-09-03, shipped the same day)
+
+Asked after CLP-RUN closed: 「需要 somehow indicate active account for claude/codex/other services」「each ring should has some label for account」「double ring, one for 5h and one for weekly (single ring if no 5h limit)」, plus 「为什么 constant 在转圈」.
+
+- **Names under rings** — `ClauthRailCaption` under the percent label, one line inside a caption budget `DockLayout.captionHeight(on:)` (vertical rails only; the top rail keeps its pill); the rail widens 64 → 88pt (`DockLayout.width` reads `PanelMetrics.showsCaptions`). clauth names lose the prefix they all share, cut at a separator (`ClauthCaption.shortNames`: `ax-main` → `main`, `ax-codex-dev0` → `codex-dev0`); the hover card keeps the full name. Off switch in the clauth pane ("Names under rings").
+- **Active cue** — a filled accent dot at the ring's top-right (`ClauthRingExtras.activeBadge`) on the harness's active slot, the caption in semibold, VoiceOver "… usage, active". Never a ring-stroke change (拍的板 #8 stands).
+- **Inner weekly ring** — `ClauthRingExtras.innerArc`: the other unscoped window (weekly first) as a thinner arc inside upstream's ring; a weekly-only plan stays a single ring; a scoped window never. Colour by the same `UsageTint`. Off switch "Weekly as an inner ring".
+- **Working mark** — upstream's white "CLI is working" mark is per PROVIDER (transcript writes), so a rail of several accounts spun on every ring while any agent ran. Policy in `ClauthVisibility.activity` (Off / Active / All, default Active): the hook on `RailEntry.isRunning` ANDs it with `ClauthVisibility.showsActivity(for:)`.
+- Hooks (+11 → 45/56): `PanelMetrics.showsCaptions` + setter 3 · `DockLayout` width 1, `captionHeight` 1, `itemLength` 1, `ringOffsetInItem` 1 · `UsageDockItem` caption 2 · `FloatingUsagePanelView` activity 1 + rebuild id 1. Tests: `ClauthRailTests` (7). Evidence: `evidence/clp5/`.
+
 ### CLP-4 — retire ccsbar (human-gated, NOT in this goal)
 
 After AX has lived on the Pulse rail: README pointer in ccsbar, login item off, `/Applications/ccsbar.app` removed, ccsbar repo archived; rail captions if wanted. Needs AX's say-so — it deletes a working tool.

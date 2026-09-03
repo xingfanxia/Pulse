@@ -430,3 +430,14 @@
 "Resets %@" = "%@ 重置";
 "As of %@" = "截至 %@";
 "Show on rail" = "显示在侧栏";
+"%@ usage, active" = "%@ 用量，当前使用";
+"Rail" = "侧栏";
+"Names under rings" = "环下显示名称";
+"The account under each ring; clauth names lose the prefix they all share. Widens the rail." = "每个环下显示账号名；clauth 账号去掉共同前缀。侧栏会变宽。";
+"Weekly as an inner ring" = "内环显示每周";
+"A thinner arc inside the ring for the other limit — weekly inside the 5-hour ring. Single ring when there is only one." = "环内再画一圈细弧显示另一限额：5 小时环内是每周。只有一个限额时保持单环。";
+"Working mark" = "工作标记";
+"The white mark that turns while a claude or codex process is writing. It cannot tell accounts apart, so by default only the active account’s ring shows it." = "claude 或 codex 进程在写入时转动的白色标记。它分不清账号，默认只在当前账号的环上显示。";
+"Off" = "关";
+"Active" = "仅当前";
+"All" = "全部";

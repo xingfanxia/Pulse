@@ -12,6 +12,7 @@ struct ClauthSettingsPane: View {
         VStack(alignment: .leading, spacing: 22) {
             if let watcher = ClauthWatcher.current {
                 daemonGroup(watcher)
+                railGroup
                 if let status = watcher.status {
                     autoSwitchGroup(status, watcher: watcher)
                     ClauthHarnessSection(harness: .claude, status: status, watcher: watcher, settings: settings)
@@ -66,6 +67,55 @@ struct ClauthSettingsPane: View {
                 SettingsRow(String.localized("Last error"), subtitle: error) {
                     Button(String.localized("Dismiss")) { watcher.actions.clearError() }
                 }
+            }
+        }
+    }
+
+    private var railGroup: some View {
+        SettingsGroup(String.localized("Rail")) {
+            SettingsRow(
+                String.localized("Names under rings"),
+                subtitle: String.localized("The account under each ring; clauth names lose the prefix they all share. Widens the rail.")
+            ) {
+                Toggle("", isOn: Binding(
+                    get: { ClauthVisibility.shared.railCaptions },
+                    set: { ClauthVisibility.setRailCaptions($0, settings: settings) }
+                ))
+                .labelsHidden()
+                .toggleStyle(.switch)
+            }
+
+            SettingsRowDivider()
+
+            SettingsRow(
+                String.localized("Weekly as an inner ring"),
+                subtitle: String.localized("A thinner arc inside the ring for the other limit — weekly inside the 5-hour ring. Single ring when there is only one.")
+            ) {
+                Toggle("", isOn: Binding(
+                    get: { ClauthVisibility.shared.innerRing },
+                    set: { ClauthVisibility.shared.innerRing = $0 }
+                ))
+                .labelsHidden()
+                .toggleStyle(.switch)
+            }
+
+            SettingsRowDivider()
+
+            SettingsRow(
+                String.localized("Working mark"),
+                subtitle: String.localized("The white mark that turns while a claude or codex process is writing. It cannot tell accounts apart, so by default only the active account’s ring shows it.")
+            ) {
+                Picker("", selection: Binding(
+                    get: { ClauthVisibility.shared.activity },
+                    set: { ClauthVisibility.shared.activity = $0 }
+                )) {
+                    Text(localized: "Off").tag(ClauthVisibility.Activity.off)
+                    Text(localized: "Active").tag(ClauthVisibility.Activity.activeOnly)
+                    Text(localized: "All").tag(ClauthVisibility.Activity.all)
+                }
+                .labelsHidden()
+                .pickerStyle(.segmented)
+                .frame(width: SettingsLayout.controlWidth, alignment: .trailing)
             }
         }
     }

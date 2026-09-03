@@ -6,7 +6,7 @@ import SwiftUI
 /// content never drift apart.
 enum DockLayout {
     /// Rail width. Flush against the screen's right edge.
-    static var width: CGFloat { 64 * PanelMetrics.scale }
+    static var width: CGFloat { (PanelMetrics.showsCaptions ? 88 : 64) * PanelMetrics.scale }
     /// Measured from the panel's top edge, NOT from the rail body's flat top
     /// — the concave flare occupies the first `flareHeight` of it. So the
     /// breathing room actually visible above the first ring is
@@ -70,8 +70,9 @@ enum DockLayout {
     /// the ring it appears to be aimed at.
     static func ringOffsetInItem(on axis: PanelEdge.Axis) -> CGFloat {
         guard labelLeads, showsPercentages(on: axis) else { return 0 }
-        return percentTextHeight + ringToTextSpacing
+        return percentTextHeight + ringToTextSpacing + captionHeight(on: axis)
     }
+    static func captionHeight(on axis: PanelEdge.Axis) -> CGFloat { PanelMetrics.showsCaptions && axis == .vertical ? ringToTextSpacing + 11 * PanelMetrics.scale : 0 }
 
     /// Whether an item carries its percent label. A setting on both axes, with
     /// opposite defaults: down a side the label sits under its ring and costs
@@ -109,7 +110,7 @@ enum DockLayout {
     /// item that can compress is the text: every label rendered as "10…".
     static func itemLength(on axis: PanelEdge.Axis) -> CGFloat {
         guard showsPercentages(on: axis) else { return ringDiameter }
-        return axis == .vertical ? itemHeight : max(ringDiameter, percentTextWidth)
+        return axis == .vertical ? itemHeight + captionHeight(on: axis) : max(ringDiameter, percentTextWidth)
     }
 
     /// The rail's extent **across** its run: its width down a side, its height
@@ -411,11 +412,11 @@ private struct UsageDockItem: View {
         // the same swap expressed as a number, and the hit testing runs on
         // that — the two must not be allowed to disagree.
         VStack(spacing: DockLayout.ringToTextSpacing) {
-            if DockLayout.labelLeads { percentLabel }
+            if DockLayout.labelLeads { percentLabel; ClauthRailCaption(account: usage.account) }
 
             ring
 
-            if !DockLayout.labelLeads { percentLabel }
+            if !DockLayout.labelLeads { percentLabel; ClauthRailCaption(account: usage.account) }
         }
         .contentShape(.rect)
         .background {

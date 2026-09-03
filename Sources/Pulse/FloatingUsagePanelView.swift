@@ -154,7 +154,7 @@ struct FloatingUsagePanelView: View {
             // change. The last one is easy to forget and changes the rail's
             // *thickness*, so leaving it out draws the rings at one size in a
             // berth built for the other.
-            .id("\(settings.language.rawValue)-\(settings.panelSize.rawValue)-\(settings.topRailShowsPercentages)-\(settings.sideRailShowsPercentages)-\(settings.railSpacing.rawValue)-\(settings.labelAboveRing)-\(settings.showsForecast)")
+            .id("\(settings.language.rawValue)-\(settings.panelSize.rawValue)-\(settings.topRailShowsPercentages)-\(settings.sideRailShowsPercentages)-\(settings.railSpacing.rawValue)-\(settings.labelAboveRing)-\(settings.showsForecast)-\(ClauthVisibility.shared.railCaptions)")
     }
 
     /// Whether the rail is drawn out in full.
@@ -193,7 +193,7 @@ struct FloatingUsagePanelView: View {
                 // Activity is per *provider*: a running CLI belongs to whichever
                 // account it happens to be signed in to, and the transcripts do
                 // not say which. Every account of that provider shows the mark.
-                isRunning: store.isRunning(account.provider),
+                isRunning: store.isRunning(account.provider) && ClauthVisibility.showsActivity(for: account, settings: settings),
                 isRefreshing: store.isRefreshing(account),
                 tint: settings.ringTint(for: account),
                 // Nil unless it is switched on *and* the window says enough to

@@ -430,3 +430,14 @@
 "Resets %@" = "Resets %@";
 "As of %@" = "As of %@";
 "Show on rail" = "Show on rail";
+"%@ usage, active" = "%@ usage, active";
+"Rail" = "Rail";
+"Names under rings" = "Names under rings";
+"The account under each ring; clauth names lose the prefix they all share. Widens the rail." = "The account under each ring; clauth names lose the prefix they all share. Widens the rail.";
+"Weekly as an inner ring" = "Weekly as an inner ring";
+"A thinner arc inside the ring for the other limit — weekly inside the 5-hour ring. Single ring when there is only one." = "A thinner arc inside the ring for the other limit — weekly inside the 5-hour ring. Single ring when there is only one.";
+"Working mark" = "Working mark";
+"The white mark that turns while a claude or codex process is writing. It cannot tell accounts apart, so by default only the active account’s ring shows it." = "The white mark that turns while a claude or codex process is writing. It cannot tell accounts apart, so by default only the active account’s ring shows it.";
+"Off" = "Off";
+"Active" = "Active";
+"All" = "All";

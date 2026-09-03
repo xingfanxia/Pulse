@@ -46,7 +46,7 @@ final class ClauthWatcher {
     let client: ClauthDaemonClient
     let switches: ClauthSwitchController
     let actions: ClauthActions
-    private let store: UsageStore
+    let store: UsageStore
     private let visibility: ClauthVisibility
     private var timer: Timer?
     private var lastModified: Date?

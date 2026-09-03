@@ -38,13 +38,17 @@ struct ClauthRingMenuModifier: ViewModifier {
 
     @ViewBuilder
     func body(content: Content) -> some View {
+        // The inner arc and the active badge ride every ring; the menu and
+        // the name are clauth's alone.
+        let extras = content.overlay(alignment: DockLayout.labelLeads ? .bottom : .top) { ClauthRingExtras(account: account) }
         if let name = ClauthMapping.profileName(of: account) {
-            content
+            let active = ClauthCaption.isActive(account, status: ClauthWatcher.current?.status)
+            extras
                 .overlay { ClauthInFlightBadge(name: name) }
-                .accessibilityLabel(String.localized("\(name) usage"))
+                .accessibilityLabel(active ? String.localized("\(name) usage, active") : String.localized("\(name) usage"))
                 .contextMenu { ClauthRingMenuContent(account: account, name: name) }
         } else {
-            content
+            extras
         }
     }
 }

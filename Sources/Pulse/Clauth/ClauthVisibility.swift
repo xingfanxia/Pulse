@@ -50,14 +50,62 @@ final class ClauthVisibility {
     /// watcher on every change; never persisted — the feed is the truth.
     var inactiveAccounts: Set<String> = []
 
+    /// A name under every ring (AX 2026-09-03). Changes the rail's width and
+    /// each item's length, so it is mirrored into `PanelMetrics` before the
+    /// panel measures.
+    var railCaptions: Bool {
+        didSet {
+            PanelMetrics.showCaptions(railCaptions)
+            guard railCaptions != oldValue else { return }
+            defaults?.set(railCaptions, forKey: Key.railCaptions)
+        }
+    }
+
+    /// The other unscoped window as a thinner arc inside the ring: weekly
+    /// inside the 5h ring for claude, nothing for a weekly-only codex plan.
+    var innerRing: Bool {
+        didSet {
+            guard innerRing != oldValue else { return }
+            defaults?.set(innerRing, forKey: Key.innerRing)
+        }
+    }
+
+    /// Where upstream's "CLI is working" mark spins. It reads transcript
+    /// writes per PROVIDER, so on a rail of several accounts of one provider
+    /// it would spin on every ring for as long as any agent runs.
+    enum Activity: String, CaseIterable, Sendable {
+        case off, activeOnly, all
+    }
+
+    var activity: Activity {
+        didSet {
+            guard activity != oldValue else { return }
+            defaults?.set(activity.rawValue, forKey: Key.activity)
+        }
+    }
+
     private let defaults: UserDefaults?
 
     /// `defaults: nil` keeps the state in memory only (tests).
-    init(defaults: UserDefaults?, hiddenAccounts: Set<String>? = nil, hidesPrimaries: Bool? = nil, hidesInactive: Bool? = nil) {
+    init(
+        defaults: UserDefaults?,
+        hiddenAccounts: Set<String>? = nil,
+        hidesPrimaries: Bool? = nil,
+        hidesInactive: Bool? = nil,
+        railCaptions: Bool? = nil,
+        innerRing: Bool? = nil,
+        activity: Activity? = nil
+    ) {
         self.defaults = defaults
         self.hiddenAccounts = hiddenAccounts ?? Set(defaults?.stringArray(forKey: Key.hidden) ?? [])
         self.hidesPrimaries = hidesPrimaries ?? (defaults?.object(forKey: Key.hidesPrimaries) as? Bool ?? true)
         self.hidesInactive = hidesInactive ?? (defaults?.object(forKey: Key.hidesInactive) as? Bool ?? true)
+        self.railCaptions = railCaptions ?? (defaults?.object(forKey: Key.railCaptions) as? Bool ?? true)
+        self.innerRing = innerRing ?? (defaults?.object(forKey: Key.innerRing) as? Bool ?? true)
+        self.activity = activity ?? (defaults?.string(forKey: Key.activity)).flatMap(Activity.init(rawValue:)) ?? .activeOnly
+        // The initialiser bypasses didSet; the shared instance is created
+        // before the panel measures, so the metric is set here too.
+        PanelMetrics.showCaptions(self.railCaptions)
     }
 
     /// The rail's shown accounts, from the UNFILTERED user order so a drag
@@ -104,6 +152,25 @@ final class ClauthVisibility {
         settings.onChange?()
     }
 
+    static func setRailCaptions(_ on: Bool, settings: AppSettings, state: ClauthVisibility = .shared) {
+        state.railCaptions = on
+        settings.onChange?()
+    }
+
+    /// Whether the activity mark may spin on this ring: a primary is its
+    /// provider's live login, a clauth ring only when it is the harness's
+    /// active slot — unless the mark is off, or wanted everywhere.
+    @MainActor
+    static func showsActivity(for account: AccountKey, settings: AppSettings, state: ClauthVisibility = .shared, status: ClauthStatus? = ClauthWatcher.current?.status) -> Bool {
+        switch state.activity {
+        case .off: return false
+        case .all: return true
+        case .activeOnly:
+            guard let name = ClauthMapping.profileName(of: account), let harness = ClauthMapping.harness(of: account) else { return true }
+            return status?.activeName(for: harness) == name
+        }
+    }
+
     /// The watcher's publish of what the feed calls inactive; announces a
     /// change so the panel re-measures a rail that just got shorter.
     static func publishInactive(_ ids: Set<String>, settings: AppSettings, state: ClauthVisibility = .shared) -> Bool {
@@ -116,5 +183,8 @@ final class ClauthVisibility {
         static let hidden = "clauth.hiddenAccounts"
         static let hidesPrimaries = "clauth.hidesPrimaries"
         static let hidesInactive = "clauth.hidesInactive"
+        static let railCaptions = "clauth.railCaptions"
+        static let innerRing = "clauth.innerRing"
+        static let activity = "clauth.activity"
     }
 }

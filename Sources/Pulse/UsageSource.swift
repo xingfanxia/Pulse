@@ -221,6 +221,9 @@ enum PanelMetrics {
     /// first time a seventh account existed.
     nonisolated(unsafe) private static var storedCapacity = Provider.allCases.count
 
+    nonisolated(unsafe) private static var storedCaptions = false
+    static var showsCaptions: Bool { lock.withLock { storedCaptions } }
+    static func showCaptions(_ shows: Bool) { lock.withLock { storedCaptions = shows } }
     static var scale: CGFloat { lock.withLock { stored } }
     static var spacing: CGFloat { lock.withLock { storedSpacing } }
     static var topRailShowsPercentages: Bool { lock.withLock { storedTopPercentages } }
