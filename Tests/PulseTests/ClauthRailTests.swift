@@ -165,4 +165,28 @@ final class ClauthRailTests: XCTestCase {
         let again = ClauthVisibility(defaults: defaults)
         XCTAssertFalse(again.railCaptions); XCTAssertFalse(again.innerRing); XCTAssertEqual(again.activity, .all); XCTAssertEqual(again.captionStyle, .name); XCTAssertFalse(again.frostedSurface)
     }
+
+    func testSliverWidthIsClampedPersistedAndDrivesTheCollapsedSizes() {
+        let suite = "clp-sliver-\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let state = ClauthVisibility(defaults: defaults)
+        XCTAssertEqual(state.sliverWidth, 10, "wider than upstream's 6 by default")
+        state.sliverWidth = 40
+        XCTAssertEqual(state.sliverWidth, 24, "clamped to the range")
+        state.sliverWidth = 1
+        XCTAssertEqual(state.sliverWidth, 4)
+        state.sliverWidth = 16
+        XCTAssertEqual(ClauthVisibility(defaults: defaults).sliverWidth, 16, "persisted")
+        // The shared instance is what DockLayout reads; the hit area never shrinks below upstream's 20pt.
+        let before = ClauthVisibility.shared.sliverWidth
+        defer { ClauthVisibility.shared.sliverWidth = before }
+        ClauthVisibility.shared.sliverWidth = 6
+        XCTAssertEqual(DockLayout.collapsedWidth, 6 * PanelMetrics.scale)
+        XCTAssertEqual(DockLayout.collapsedHitWidth, 20 * PanelMetrics.scale)
+        ClauthVisibility.shared.sliverWidth = 24
+        XCTAssertEqual(DockLayout.collapsedWidth, 24 * PanelMetrics.scale)
+        XCTAssertEqual(DockLayout.collapsedHitWidth, 32 * PanelMetrics.scale, "the hit area grows with the sliver")
+        XCTAssertTrue(PanelHitArea.stripIsContainedInRail(), "the sliver's hit area still sits inside the rail")
+    }
 }

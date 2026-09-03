@@ -115,6 +115,20 @@ final class ClauthVisibility {
         }
     }
 
+    /// The collapsed sliver's width in points (upstream draws 6). The hit
+    /// area grows with it. AX 2026-09-03: 「可以增加点 width，做成 configurable」.
+    static let sliverWidthRange: ClosedRange<Double> = 4...24
+    static let defaultSliverWidth: Double = 10
+
+    var sliverWidth: Double {
+        didSet {
+            let clamped = min(max(sliverWidth, Self.sliverWidthRange.lowerBound), Self.sliverWidthRange.upperBound)
+            if clamped != sliverWidth { sliverWidth = clamped; return }
+            guard sliverWidth != oldValue else { return }
+            defaults?.set(sliverWidth, forKey: Key.sliverWidth)
+        }
+    }
+
     private let defaults: UserDefaults?
 
     /// `defaults: nil` keeps the state in memory only (tests).
@@ -127,7 +141,8 @@ final class ClauthVisibility {
         innerRing: Bool? = nil,
         activity: Activity? = nil,
         captionStyle: CaptionStyle? = nil,
-        frostedSurface: Bool? = nil
+        frostedSurface: Bool? = nil,
+        sliverWidth: Double? = nil
     ) {
         self.defaults = defaults
         self.hiddenAccounts = hiddenAccounts ?? Set(defaults?.stringArray(forKey: Key.hidden) ?? [])
@@ -140,6 +155,8 @@ final class ClauthVisibility {
         self.activity = activity ?? (defaults?.string(forKey: Key.activity)).flatMap(Activity.init(rawValue:)) ?? .off
         self.captionStyle = captionStyle ?? (defaults?.string(forKey: Key.captionStyle)).flatMap(CaptionStyle.init(rawValue:)) ?? .email
         self.frostedSurface = frostedSurface ?? (defaults?.object(forKey: Key.frostedSurface) as? Bool ?? true)
+        let storedWidth = sliverWidth ?? (defaults?.object(forKey: Key.sliverWidth) as? Double ?? Self.defaultSliverWidth)
+        self.sliverWidth = min(max(storedWidth, Self.sliverWidthRange.lowerBound), Self.sliverWidthRange.upperBound)
     }
 
     /// The rail's shown accounts, from the UNFILTERED user order so a drag
@@ -222,5 +239,6 @@ final class ClauthVisibility {
         static let activity = "clauth.activity"
         static let captionStyle = "clauth.captionStyle"
         static let frostedSurface = "clauth.frostedSurface"
+        static let sliverWidth = "clauth.sliverWidth"
     }
 }

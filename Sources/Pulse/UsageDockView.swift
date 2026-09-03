@@ -200,9 +200,9 @@ enum DockLayout {
     /// the edge always lands on it. The tracking area around it is wider than
     /// the drawing, so approaching from inside works without having to arrive
     /// exactly.
-    static var collapsedWidth: CGFloat { 6 * PanelMetrics.scale }
+    static var collapsedWidth: CGFloat { ClauthVisibility.shared.sliverWidth * PanelMetrics.scale }
     static var collapsedHeight: CGFloat { 96 * PanelMetrics.scale }
-    static var collapsedHitWidth: CGFloat { 20 * PanelMetrics.scale }
+    static var collapsedHitWidth: CGFloat { max(20, ClauthVisibility.shared.sliverWidth + 8) * PanelMetrics.scale }
 
     /// The sliver, laid the way `axis` lays the rail: 6pt of it against the
     /// screen edge and 96pt along it, whichever way round that falls.

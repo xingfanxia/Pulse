@@ -448,3 +448,5 @@
 "Frosted dark surface" = "深色毛玻璃表面";
 "Liquid Glass is on in General and takes precedence." = "「通用」里已开启 Liquid Glass，以它为准。";
 "Blurred dark glass for the rail and the card instead of flat black; the collapsed sliver’s alert colour becomes a wash." = "侧栏与卡片用深色磨砂玻璃代替纯黑；收起时的报警色变为半透明。";
+"Collapsed width" = "收起时的宽度";
+"How wide the sliver is while the rail is hidden — %@ points." = "侧栏隐藏时那条边的宽度：%@ pt。";

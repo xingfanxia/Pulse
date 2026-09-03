@@ -91,6 +91,23 @@ struct ClauthSettingsPane: View {
             SettingsRowDivider()
 
             SettingsRow(
+                String.localized("Collapsed width"),
+                subtitle: String.localized("How wide the sliver is while the rail is hidden — \("\(Int(ClauthVisibility.shared.sliverWidth))") points.")
+            ) {
+                Slider(
+                    value: Binding(
+                        get: { ClauthVisibility.shared.sliverWidth },
+                        set: { ClauthVisibility.shared.sliverWidth = $0.rounded() }
+                    ),
+                    in: ClauthVisibility.sliverWidthRange,
+                    step: 1
+                )
+                .frame(width: SettingsLayout.controlWidth)
+            }
+
+            SettingsRowDivider()
+
+            SettingsRow(
                 String.localized("Labels under rings"),
                 subtitle: String.localized("The account under each ring, the active one in a capsule. Widens the rail; side rails only.")
             ) {
