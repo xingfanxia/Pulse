@@ -10,10 +10,11 @@ struct ClauthFrostedSurface<S: Shape>: View {
     let shape: S
     var tint: Color?
 
-    /// The berth folded to its sliver. A neutral sliver gets an accent wash
-    /// and a brighter edge so it can be found at the screen edge — a bare
-    /// frost there was too faint (AX 2026-09-03: 「有点太不显眼了」); the
-    /// open rail stays plain dark frost.
+    /// The berth folded to its sliver. A neutral sliver is a lighter frost
+    /// with a bright edge so it can be found at the screen edge — no hue:
+    /// a bare dark frost was too faint and an accent wash was worse than
+    /// the black it replaced (AX 2026-09-03). The open rail stays plain
+    /// dark frost; an alert keeps its colour.
     private var isSliver: Bool {
         (shape as? DockBerthShape).map { $0.openness < 0.5 } ?? false
     }
@@ -22,13 +23,13 @@ struct ClauthFrostedSurface<S: Shape>: View {
         ZStack {
             ClauthVisualEffect()
                 .clipShape(shape)
-            shape.fill(Color.black.opacity(isSliver ? 0.2 : 0.38))
+            shape.fill(Color.black.opacity(isSliver ? 0.1 : 0.38))
             if let tint {
                 shape.fill(tint.opacity(isSliver ? 0.7 : 0.55))
             } else if isSliver {
-                shape.fill(Color.accentColor.opacity(0.55))
+                shape.fill(Color.white.opacity(0.18))
             }
-            shape.stroke(Color.white.opacity(isSliver ? 0.35 : 0.09), lineWidth: isSliver ? 1 : 0.5)
+            shape.stroke(Color.white.opacity(isSliver ? 0.45 : 0.09), lineWidth: isSliver ? 1 : 0.5)
         }
     }
 }
