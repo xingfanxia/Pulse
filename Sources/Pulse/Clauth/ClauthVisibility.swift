@@ -16,7 +16,12 @@ import Observation
 /// nothing to grab.
 @Observable
 final class ClauthVisibility {
-    nonisolated(unsafe) static let shared = ClauthVisibility(defaults: .standard)
+    nonisolated(unsafe) static let shared: ClauthVisibility = {
+        let shared = ClauthVisibility(defaults: .standard)
+        // The initialiser bypasses didSet; the panel measures after this.
+        PanelMetrics.showCaptions(shared.railCaptions)
+        return shared
+    }()
 
     /// Account ids (of clauth slots) the user took off the rail.
     var hiddenAccounts: Set<String> {
@@ -55,7 +60,9 @@ final class ClauthVisibility {
     /// panel measures.
     var railCaptions: Bool {
         didSet {
-            PanelMetrics.showCaptions(railCaptions)
+            // Only a persisted instance drives the process-wide metric; the
+            // in-memory instances tests build must not retune the rail.
+            if defaults != nil { PanelMetrics.showCaptions(railCaptions) }
             guard railCaptions != oldValue else { return }
             defaults?.set(railCaptions, forKey: Key.railCaptions)
         }
@@ -84,6 +91,20 @@ final class ClauthVisibility {
         }
     }
 
+    /// What the caption reads: the account's email (its local part — the
+    /// domain rarely tells two accounts apart and never fits) or the profile
+    /// name. AX 2026-09-03: 「label 直接显示邮箱」.
+    enum CaptionStyle: String, CaseIterable, Sendable {
+        case email, name
+    }
+
+    var captionStyle: CaptionStyle {
+        didSet {
+            guard captionStyle != oldValue else { return }
+            defaults?.set(captionStyle.rawValue, forKey: Key.captionStyle)
+        }
+    }
+
     private let defaults: UserDefaults?
 
     /// `defaults: nil` keeps the state in memory only (tests).
@@ -94,7 +115,8 @@ final class ClauthVisibility {
         hidesInactive: Bool? = nil,
         railCaptions: Bool? = nil,
         innerRing: Bool? = nil,
-        activity: Activity? = nil
+        activity: Activity? = nil,
+        captionStyle: CaptionStyle? = nil
     ) {
         self.defaults = defaults
         self.hiddenAccounts = hiddenAccounts ?? Set(defaults?.stringArray(forKey: Key.hidden) ?? [])
@@ -102,10 +124,10 @@ final class ClauthVisibility {
         self.hidesInactive = hidesInactive ?? (defaults?.object(forKey: Key.hidesInactive) as? Bool ?? true)
         self.railCaptions = railCaptions ?? (defaults?.object(forKey: Key.railCaptions) as? Bool ?? true)
         self.innerRing = innerRing ?? (defaults?.object(forKey: Key.innerRing) as? Bool ?? true)
-        self.activity = activity ?? (defaults?.string(forKey: Key.activity)).flatMap(Activity.init(rawValue:)) ?? .activeOnly
-        // The initialiser bypasses didSet; the shared instance is created
-        // before the panel measures, so the metric is set here too.
-        PanelMetrics.showCaptions(self.railCaptions)
+        // Off by default (AX 2026-09-03): with an agent always running here
+        // the mark never stopped, and it says nothing about the account.
+        self.activity = activity ?? (defaults?.string(forKey: Key.activity)).flatMap(Activity.init(rawValue:)) ?? .off
+        self.captionStyle = captionStyle ?? (defaults?.string(forKey: Key.captionStyle)).flatMap(CaptionStyle.init(rawValue:)) ?? .email
     }
 
     /// The rail's shown accounts, from the UNFILTERED user order so a drag
@@ -186,5 +208,6 @@ final class ClauthVisibility {
         static let railCaptions = "clauth.railCaptions"
         static let innerRing = "clauth.innerRing"
         static let activity = "clauth.activity"
+        static let captionStyle = "clauth.captionStyle"
     }
 }

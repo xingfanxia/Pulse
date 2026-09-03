@@ -35,12 +35,14 @@ enum ClauthRingMenu {
 /// passes through untouched.
 struct ClauthRingMenuModifier: ViewModifier {
     let account: AccountKey
+    /// The ring grows 6% while pointed at; the overlaid arc follows it.
+    var selected: Bool = false
 
     @ViewBuilder
     func body(content: Content) -> some View {
-        // The inner arc and the active badge ride every ring; the menu and
-        // the name are clauth's alone.
-        let extras = content.overlay(alignment: DockLayout.labelLeads ? .bottom : .top) { ClauthRingExtras(account: account) }
+        // The inner arc rides clauth rings; the menu and the name are
+        // clauth's alone too. Every other ring passes through untouched.
+        let extras = content.overlay(alignment: DockLayout.labelLeads ? .bottom : .top) { ClauthRingExtras(account: account, selected: selected) }
         if let name = ClauthMapping.profileName(of: account) {
             let active = ClauthCaption.isActive(account, status: ClauthWatcher.current?.status)
             extras

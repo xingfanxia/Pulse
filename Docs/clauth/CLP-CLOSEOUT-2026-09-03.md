@@ -9,6 +9,11 @@ Pulse fork `xingfanxia/Pulse`, `main` at the commits listed at the end (CLP-1 `b
 - ccsbar is still running and untouched (CLP-4, human-gated).
 - Nothing of clauth's was written, switched, renamed or deleted by this run: the snapshot oracle (profile set, both active slots, 14 profile dirs) matches the Task 0 baseline and `~/.clauth/daemon.log` carries no switch/rename/delete line stamped inside the run window; `~/.codex/config.toml` and `~/.claude/settings.json` keep their pre-run mtimes; both clauth LaunchAgents keep their pre-run pids.
 
+## Addendum 2026-09-03 (after the closeout): CLP-5 + the defaults leak
+
+- CLP-5 shipped at AX's ask the same night: labels under rings (email local part by default), the active account's label in a solid accent capsule, the week as the outer ring with the 5h window as an inner arc, upstream's working mark off by default. Controls: Settings → clauth → Rail.
+- The installed bundle had imported the bare build's `Pulse` defaults domain on its first run (upstream's `LegacyDefaults` loose-build migration), which switched auto-collapse OFF and left only the two hidden primaries enabled. Auto-collapse is back to upstream's default; the `Pulse` domain is wiped. Still imported and left as-is: `settings.enabledProviders = (claudeCode, codex)` — Cursor and the rest are a switch away in Settings → Accounts; `settings.launchAtLogin.decided = 1` — Pulse did NOT register a login item; turn it on in Settings → General if you want the rail at login.
+
 ## AX 首次手动动作清单 (in this order)
 
 1. **Confirm auto-updates are off**: `defaults read io.github.qunqin24.Pulse SUEnableAutomaticChecks` → `0`. (Also visible in Settings → About.) If you ever turn it on, upstream's appcast will offer vanilla Pulse and overwrite the fork.

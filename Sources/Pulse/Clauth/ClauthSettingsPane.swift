@@ -74,8 +74,8 @@ struct ClauthSettingsPane: View {
     private var railGroup: some View {
         SettingsGroup(String.localized("Rail")) {
             SettingsRow(
-                String.localized("Names under rings"),
-                subtitle: String.localized("The account under each ring; clauth names lose the prefix they all share. Widens the rail.")
+                String.localized("Labels under rings"),
+                subtitle: String.localized("The account under each ring, the active one in a capsule. Widens the rail; side rails only.")
             ) {
                 Toggle("", isOn: Binding(
                     get: { ClauthVisibility.shared.railCaptions },
@@ -88,8 +88,27 @@ struct ClauthSettingsPane: View {
             SettingsRowDivider()
 
             SettingsRow(
-                String.localized("Weekly as an inner ring"),
-                subtitle: String.localized("A thinner arc inside the ring for the other limit — weekly inside the 5-hour ring. Single ring when there is only one.")
+                String.localized("Label shows"),
+                subtitle: String.localized("The email’s part before @, or the profile name without the prefix they all share.")
+            ) {
+                Picker("", selection: Binding(
+                    get: { ClauthVisibility.shared.captionStyle },
+                    set: { ClauthVisibility.shared.captionStyle = $0 }
+                )) {
+                    Text(localized: "Email").tag(ClauthVisibility.CaptionStyle.email)
+                    Text(localized: "Name").tag(ClauthVisibility.CaptionStyle.name)
+                }
+                .labelsHidden()
+                .pickerStyle(.segmented)
+                .frame(width: 140)
+                .disabled(!ClauthVisibility.shared.railCaptions)
+            }
+
+            SettingsRowDivider()
+
+            SettingsRow(
+                String.localized("5-hour as an inner ring"),
+                subtitle: String.localized("A thinner arc inside the weekly ring for the 5-hour limit. Single ring when there is only one.")
             ) {
                 Toggle("", isOn: Binding(
                     get: { ClauthVisibility.shared.innerRing },
@@ -103,7 +122,7 @@ struct ClauthSettingsPane: View {
 
             SettingsRow(
                 String.localized("Working mark"),
-                subtitle: String.localized("The white mark that turns while a claude or codex process is writing. It cannot tell accounts apart, so by default only the active account’s ring shows it.")
+                subtitle: String.localized("The white mark that turns while a claude or codex process is writing. It cannot tell accounts apart and says nothing about the account, so it is off by default.")
             ) {
                 Picker("", selection: Binding(
                     get: { ClauthVisibility.shared.activity },

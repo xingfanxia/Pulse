@@ -47,6 +47,8 @@ final class ClauthWatcher {
     let switches: ClauthSwitchController
     let actions: ClauthActions
     let store: UsageStore
+    /// Where the panel is docked — the rail caption draws down a side only.
+    let placement: PanelPlacement
     private let visibility: ClauthVisibility
     private var timer: Timer?
     private var lastModified: Date?
@@ -60,12 +62,14 @@ final class ClauthWatcher {
         settings: AppSettings,
         store: UsageStore,
         home: URL = ClauthPaths.home,
+        placement: PanelPlacement = PanelPlacement(),
         visibility: ClauthVisibility = .shared,
         switchTiming: ClauthSwitchController.Timing = ClauthSwitchController.Timing()
     ) {
         self.settings = settings
         self.store = store
         self.home = home
+        self.placement = placement
         self.visibility = visibility
         let client = ClauthDaemonClient(home: home)
         self.client = client

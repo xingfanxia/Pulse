@@ -39,7 +39,7 @@ Before the final verdict: run `make test` (the clear hook only releases after a 
 | 6 | Daemon dead / stale | `.stale` whenever `fetch_status != Fresh` or `stale` or the ladder is dead (ccsbar's predicate); clauth footnote via a 2-line `footnote` hook (CLP-2); NO new `Unavailability` case | one enum hunk later |
 | 7 | Names on the rail | none in CLP-1..3; shipped in CLP-5 the same day at AX's ask | done |
 | 8 | Active-slot cue | active first in its harness group, card says "active"; CLP-5 adds the accent dot + semibold caption; still no ring-stroke change | done |
-| 9 | Per-model weekly (`7d fable`) | `.weekly` with `scope`; never contributes to exhaustion; never the rail headline (default pin 5h/7d, user pin wins) | none |
+| 9 | Per-model weekly (`7d fable`) | `.weekly` with `scope`; never contributes to exhaustion; never the rail headline (default pin = the week since CLP-5, user pin wins) | none |
 | 10 | Codex verdict + banked resets | verdict is a CARD LINE with ccsbar's attribution, never a ring color; `creditBalance` = "1 reset banked" | relabel |
 | 11 | Tests | `Tests/PulseTests` `@testable import Pulse` on the executable target — **verified working** 2026-09-02 | none |
 | 12 | Verify command | `Scripts/clauth-verify.sh` (frozen) | none |

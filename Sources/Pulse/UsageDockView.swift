@@ -6,7 +6,7 @@ import SwiftUI
 /// content never drift apart.
 enum DockLayout {
     /// Rail width. Flush against the screen's right edge.
-    static var width: CGFloat { (PanelMetrics.showsCaptions ? 88 : 64) * PanelMetrics.scale }
+    static var width: CGFloat { 64 * PanelMetrics.scale }
     /// Measured from the panel's top edge, NOT from the rail body's flat top
     /// — the concave flare occupies the first `flareHeight` of it. So the
     /// breathing room actually visible above the first ring is
@@ -69,10 +69,11 @@ enum DockLayout {
     /// and the hit testing alike, or a click lands on the number instead of on
     /// the ring it appears to be aimed at.
     static func ringOffsetInItem(on axis: PanelEdge.Axis) -> CGFloat {
-        guard labelLeads, showsPercentages(on: axis) else { return 0 }
-        return percentTextHeight + ringToTextSpacing + captionHeight(on: axis)
+        guard labelLeads else { return 0 }
+        return (showsPercentages(on: axis) ? percentTextHeight + ringToTextSpacing : 0) + captionHeight(on: axis)
     }
-    static func captionHeight(on axis: PanelEdge.Axis) -> CGFloat { PanelMetrics.showsCaptions && axis == .vertical ? ringToTextSpacing + 11 * PanelMetrics.scale : 0 }
+    static func captionHeight(on axis: PanelEdge.Axis) -> CGFloat { PanelMetrics.showsCaptions && axis == .vertical ? ringToTextSpacing + 13 * PanelMetrics.scale : 0 }
+    static var captionWidening: CGFloat { PanelMetrics.showsCaptions ? 24 * PanelMetrics.scale : 0 }
 
     /// Whether an item carries its percent label. A setting on both axes, with
     /// opposite defaults: down a side the label sits under its ring and costs
@@ -109,7 +110,7 @@ enum DockLayout {
     /// point short per ring, the stack was squeezed, and the only thing in an
     /// item that can compress is the text: every label rendered as "10…".
     static func itemLength(on axis: PanelEdge.Axis) -> CGFloat {
-        guard showsPercentages(on: axis) else { return ringDiameter }
+        guard showsPercentages(on: axis) else { return ringDiameter + captionHeight(on: axis) }
         return axis == .vertical ? itemHeight + captionHeight(on: axis) : max(ringDiameter, percentTextWidth)
     }
 
@@ -125,7 +126,7 @@ enum DockLayout {
     /// width`), so narrowing the rail when the labels go would fold the shape
     /// in on itself. Only the rail's *length* changes there.
     static func thickness(on axis: PanelEdge.Axis) -> CGFloat {
-        guard axis == .horizontal, showsPercentages(on: .horizontal) else { return width }
+        guard axis == .horizontal, showsPercentages(on: .horizontal) else { return axis == .vertical ? width + captionWidening : width }
         return itemHeight + horizontalPadding * 2
     }
 
@@ -428,7 +429,7 @@ private struct UsageDockItem: View {
         .accessibilityHint(String.localized("Activate to refresh usage."))
         .accessibilityAddTraits(.isButton)
         .accessibilityAction(named: Text(String.localized("Refresh usage")), onRefresh)
-        .modifier(ClauthRingMenuModifier(account: usage.account))
+        .modifier(ClauthRingMenuModifier(account: usage.account, selected: isSelected))
     }
 
     /// Lifted out of `body` because the initializer has enough arguments that

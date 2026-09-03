@@ -44,12 +44,12 @@ enum ClauthMapping {
     }
 
     /// The window the ring shows when the user has pinned nothing: the
-    /// session window for claude, the week for codex. Never a scoped
-    /// per-model window — a maxed `7d fable` would paint the ring red while
-    /// the account is perfectly usable.
+    /// week, on both harnesses (AX 2026-09-03: 「外圈 weekly」 — the 5h
+    /// window rides inside it as the inner arc). Never a scoped per-model
+    /// window — a maxed `7d fable` would paint the ring red while the
+    /// account is perfectly usable.
     static func defaultPin(for account: AccountKey) -> String? {
-        guard let harness = harness(of: account) else { return nil }
-        return harness == .codex ? "7d" : "5h"
+        harness(of: account) == nil ? nil : "7d"
     }
 
     /// The default pin for the reading actually on hand: the harness's

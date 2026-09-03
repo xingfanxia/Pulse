@@ -46,8 +46,8 @@ final class ClauthMappingTests: XCTestCase {
         XCTAssertEqual(ClauthMapping.plan(for: try ClauthFixture.profile("fx-codex-xfx", in: status)), "pro")
     }
 
-    func testDefaultPinIsSessionForClaudeWeekForCodexNothingForOthers() {
-        XCTAssertEqual(ClauthMapping.defaultPin(for: AccountKey(.claudeCode, slot: "clauth:fx-main")), "5h")
+    func testDefaultPinIsTheWeekOnBothHarnessesNothingForOthers() {
+        XCTAssertEqual(ClauthMapping.defaultPin(for: AccountKey(.claudeCode, slot: "clauth:fx-main")), "7d")
         XCTAssertEqual(ClauthMapping.defaultPin(for: AccountKey(.codex, slot: "clauth:fx-codex-dev0")), "7d")
         XCTAssertNil(ClauthMapping.defaultPin(for: AccountKey(.claudeCode)))
         XCTAssertNil(ClauthMapping.defaultPin(for: AccountKey(.codex, slot: "some-extra")))
@@ -57,18 +57,18 @@ final class ClauthMappingTests: XCTestCase {
         let status = try ClauthFixture.status { object in
             ClauthFixture.editProfile(&object, "fx-main") { profile in
                 var windows = profile["windows"] as? [[String: Any]] ?? []
-                windows[0]["label"] = "3d"
+                windows[1]["label"] = "3d"   // the weekly window goes away
                 profile["windows"] = windows
             }
         }
         let main = try ClauthFixture.profile("fx-main", in: status)
         let account = ClauthMapping.account(for: main)
         let usage = ClauthMapping.usage(for: main, freshness: .live, now: now)
-        XCTAssertEqual(ClauthMapping.defaultPin(for: account, in: usage), "7d")
+        XCTAssertEqual(ClauthMapping.defaultPin(for: account, in: usage), "5h")
         XCTAssertEqual(usage.headlineWindow(preferring: ClauthMapping.defaultPin(for: account, in: usage))?.usedFraction ?? 0, 0.12, accuracy: 1e-9)
-        // With the session window present it is preferred.
+        // With the weekly window present it is preferred.
         let intact = ClauthMapping.usage(for: try ClauthFixture.profile("fx-main", in: try ClauthFixture.status()), freshness: .live, now: now)
-        XCTAssertEqual(ClauthMapping.defaultPin(for: account, in: intact), "5h")
+        XCTAssertEqual(ClauthMapping.defaultPin(for: account, in: intact), "7d")
         // Only scoped windows left ⇒ nothing to pin, Pulse's rule applies.
         let scopedOnly = ClauthMapping.usage(for: try ClauthFixture.profile(["windows": [["label": "7d fable", "utilization_pct": 100]]]), freshness: .live, now: now)
         XCTAssertNil(ClauthMapping.defaultPin(for: AccountKey(.claudeCode, slot: "clauth:fx-synthetic"), in: scopedOnly))
