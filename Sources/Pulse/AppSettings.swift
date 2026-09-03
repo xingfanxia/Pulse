@@ -63,13 +63,18 @@ final class AppSettings {
         }
     }
 
+    /// Accounts clauth manages, published by `Clauth/ClauthWatcher` (fork); never persisted here.
+    var clauthAccounts: [AccountKey] = [] {
+        didSet { guard clauthAccounts != oldValue else { return }; PanelMetrics.makeRoom(for: allAccounts.count); onChange?() }
+    }
+
     /// Every account there is: each provider's first, plus whatever has been
     /// added to the two that allow it. Declaration order, before the user's
     /// own order is applied.
     var allAccounts: [AccountKey] {
         Provider.allCases.flatMap { provider in
             [AccountKey(provider)] + extraAccounts.filter { $0.provider == provider }.map(\.key)
-        }
+        } + clauthAccounts
     }
 
     /// Every account, in the user's order. Anything the stored order doesn't
@@ -97,7 +102,7 @@ final class AppSettings {
     /// What to call an account. A provider's first one is just the provider;
     /// the rest carry a label so two subscriptions can be told apart.
     func label(for account: AccountKey) -> String {
-        extraAccounts.first { $0.key == account }?.label ?? account.provider.displayName
+        extraAccounts.first { $0.key == account }?.label ?? ClauthMapping.label(for: account) ?? account.provider.displayName
     }
 
     /// Which accounts appear in the rail, as ids. Never empty — the last one
@@ -609,7 +614,7 @@ final class AppSettings {
 
     /// The accounts the rail is actually showing, in the user's order — which
     /// is what everything measuring or hit-testing the rail has to agree on.
-    var shownAccounts: [AccountKey] { orderedAccounts.filter(isEnabled) }
+    var shownAccounts: [AccountKey] { ClauthVisibility.shown(orderedAccounts, settings: self) }
 
     /// Adds an account Pulse has just signed in to, switched on and last in
     /// the rail. The slot is generated here so it can never collide with one

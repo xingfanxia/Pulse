@@ -282,3 +282,7 @@
 "Runs out in %@" = "%@后耗尽";
 "Expected to last the window" = "预计可用至本轮重置";
 "Won't last the window" = "预计撑不到本轮重置";
+
+/* clauth (fork) — accounts managed by the clauth daemon */
+"1 reset banked" = "已存 1 次重置";
+"%@ resets banked" = "已存 %@ 次重置";

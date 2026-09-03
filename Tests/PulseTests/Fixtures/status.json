@@ -1,0 +1,117 @@
+{
+  "schema": 1,
+  "generated_at": "2026-09-03T05:00:00+00:00",
+  "active_profile": "fx-main",
+  "active_codex_profile": "fx-codex-dev0",
+  "fallback_chain": ["fx-main", "fx-cl"],
+  "codex_fallback_chain": ["fx-codex-dev0", "fx-codex-xfx", "fx-codex-cl"],
+  "wrap_off": false,
+  "weekly_switch_threshold": 98.0,
+  "burn_aware": false,
+  "forecast": {"action": "switch", "to": "fx-cl"},
+  "pending_switch": null,
+  "last_switch": {"from": "fx-cl", "to": "fx-main", "at": "2026-09-02T20:00:00+00:00", "trigger": "user"},
+  "last_error": null,
+  "refresh_interval_ms": 90000,
+  "clauth_version": "0.13.1",
+  "profiles": [
+    {
+      "name": "fx-cl", "active": false, "harness": "claude", "provider": "anthropic", "base_url": null,
+      "tier": "Max 5x", "account_email": "fx-cl@example.com", "has_live_session": false,
+      "auth_status": "ok", "fetch_status": "RateLimited", "stale": false,
+      "fetched_at": "2026-09-03T04:58:00+00:00", "next_refresh_at": "2026-09-03T05:01:00+00:00",
+      "auto_start": true, "bell_threshold": null,
+      "fallback": {"position": 1, "threshold": 90.0, "armed": true, "last_resort": false, "check_weekly": true, "check_scoped": true, "weekly_threshold": null},
+      "windows": [
+        {"label": "5h", "utilization_pct": 100.0, "resets_at": "2030-01-01T02:00:00+00:00"},
+        {"label": "7d", "utilization_pct": 67.0, "resets_at": "2030-01-04T00:00:00+00:00"},
+        {"label": "7d fable", "utilization_pct": 40.0, "resets_at": "2030-01-04T00:00:00+00:00"}
+      ],
+      "third_party": null, "session_feed": true,
+      "codex_snapshot_at": null, "codex_rate_limit_reached": null, "codex_reset_credits": null
+    },
+    {
+      "name": "fx-main", "active": true, "harness": "claude", "provider": "anthropic", "base_url": null,
+      "tier": "Max 20x", "account_email": "fx-main@example.com", "has_live_session": true,
+      "auth_status": "ok", "fetch_status": "Fresh", "stale": false,
+      "fetched_at": "2026-09-03T04:59:30+00:00", "next_refresh_at": "2026-09-03T05:01:00+00:00",
+      "auto_start": true, "bell_threshold": null,
+      "fallback": {"position": 0, "threshold": 90.0, "armed": true, "last_resort": false, "check_weekly": true, "check_scoped": true, "weekly_threshold": null},
+      "windows": [
+        {"label": "5h", "utilization_pct": 12.0, "resets_at": "2030-01-01T04:00:00+00:00"},
+        {"label": "7d", "utilization_pct": 12.0, "resets_at": "2030-01-05T00:00:00+00:00"},
+        {"label": "7d fable", "utilization_pct": 100.0, "resets_at": "2030-01-05T00:00:00+00:00"}
+      ],
+      "third_party": null, "rolling_token": true,
+      "codex_snapshot_at": null, "codex_rate_limit_reached": null, "codex_reset_credits": null
+    },
+    {
+      "name": "fx-backup", "active": false, "harness": "claude", "provider": "anthropic", "base_url": null,
+      "tier": "Pro", "account_email": "fx-backup@example.com", "has_live_session": false,
+      "auth_status": "expiring", "fetch_status": "Fresh", "stale": false,
+      "fetched_at": "2026-09-03T04:59:00+00:00", "next_refresh_at": "2026-09-03T05:01:00+00:00",
+      "auto_start": false, "bell_threshold": null,
+      "fallback": null,
+      "windows": [
+        {"label": "5h", "utilization_pct": 5.0, "resets_at": "2030-01-01T01:00:00+00:00"},
+        {"label": "7d", "utilization_pct": 3.0, "resets_at": "2030-01-03T00:00:00+00:00"},
+        {"label": "7d fable", "utilization_pct": 1.0, "resets_at": "2030-01-03T00:00:00+00:00"}
+      ],
+      "third_party": null, "session_feed": true,
+      "codex_snapshot_at": null, "codex_rate_limit_reached": null, "codex_reset_credits": null
+    },
+    {
+      "name": "fx-codex-xfx", "active": false, "harness": "codex", "provider": "openai", "base_url": null,
+      "tier": "pro", "account_email": "fx-xfx@example.com", "has_live_session": false,
+      "auth_status": "ok", "fetch_status": "Fresh", "stale": false,
+      "fetched_at": "2026-09-03T04:59:50+00:00", "next_refresh_at": "2026-09-03T05:00:50+00:00",
+      "auto_start": false, "bell_threshold": null,
+      "fallback": {"position": 1, "threshold": 95.0, "armed": true, "last_resort": false, "check_weekly": true, "check_scoped": true, "weekly_threshold": null},
+      "windows": [
+        {"label": "7d", "utilization_pct": 100.0, "resets_at": "2030-01-07T02:26:04+00:00"}
+      ],
+      "third_party": null, "session_feed": false,
+      "codex_snapshot_at": "2026-08-30T10:00:00+00:00", "codex_rate_limit_reached": "rate_limit_reached", "codex_reset_credits": 1
+    },
+    {
+      "name": "fx-code-bk", "active": false, "harness": "codex", "provider": "openai", "base_url": null,
+      "tier": "plus", "account_email": "fx-bk@example.com", "has_live_session": false,
+      "auth_status": "ok", "fetch_status": "Cached", "stale": false,
+      "fetched_at": "2026-08-19T08:00:00+00:00", "next_refresh_at": null,
+      "auto_start": false, "bell_threshold": null,
+      "fallback": null,
+      "windows": [
+        {"label": "7d", "utilization_pct": 100.0, "resets_at": "2026-08-20T00:00:00+00:00"}
+      ],
+      "third_party": null, "session_feed": false,
+      "codex_snapshot_at": "2026-08-10T10:00:00+00:00", "codex_rate_limit_reached": null, "codex_reset_credits": 0
+    },
+    {
+      "name": "fx-codex-cl", "active": false, "harness": "codex", "provider": "openai", "base_url": null,
+      "tier": "plus", "account_email": "fx-codex-cl@example.com", "has_live_session": false,
+      "auth_status": "ok", "fetch_status": "Fresh", "stale": false,
+      "fetched_at": "2026-09-03T04:59:55+00:00", "next_refresh_at": "2026-09-03T05:00:55+00:00",
+      "auto_start": false, "bell_threshold": null,
+      "fallback": {"position": 2, "threshold": 95.0, "armed": true, "last_resort": true, "check_weekly": true, "check_scoped": false, "weekly_threshold": 97.0},
+      "windows": [
+        {"label": "5h", "utilization_pct": 8.0, "resets_at": "2030-01-01T03:00:00+00:00"},
+        {"label": "7d", "utilization_pct": 15.0, "resets_at": "2030-01-06T00:00:00+00:00"}
+      ],
+      "third_party": null, "session_feed": false,
+      "codex_snapshot_at": "2026-09-01T10:00:00+00:00", "codex_rate_limit_reached": null, "codex_reset_credits": 2
+    },
+    {
+      "name": "fx-codex-dev0", "active": true, "harness": "codex", "provider": "openai", "base_url": null,
+      "tier": "pro", "account_email": "fx-dev0@example.com", "has_live_session": true,
+      "auth_status": "ok", "fetch_status": "Fresh", "stale": false,
+      "fetched_at": "2026-09-03T04:59:58+00:00", "next_refresh_at": "2026-09-03T05:00:58+00:00",
+      "auto_start": true, "bell_threshold": null,
+      "fallback": {"position": 0, "threshold": 95.0, "armed": true, "last_resort": false, "check_weekly": true, "check_scoped": true, "weekly_threshold": null},
+      "windows": [
+        {"label": "7d", "utilization_pct": 33.0, "resets_at": "2030-01-09T18:28:30+00:00"}
+      ],
+      "third_party": null, "session_feed": false,
+      "codex_snapshot_at": "2026-09-02T10:00:00+00:00", "codex_rate_limit_reached": null, "codex_reset_credits": null
+    }
+  ]
+}

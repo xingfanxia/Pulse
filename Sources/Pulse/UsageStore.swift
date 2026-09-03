@@ -303,7 +303,7 @@ final class UsageStore {
         // spend someone else's request, and read a credential, for a figure
         // nobody is going to see.
         let wanted = Set(settings.shownAccounts.filter(\.isPrimary).map(\.provider))
-        let extras = settings.shownAccounts.filter { !$0.isPrimary }
+        let extras = ClauthFetchGuard.extras(settings.shownAccounts)
 
         Task { [codex, claudeCode, antigravity, cursor] in
             // Independent, so they run side by side rather than one waiting on
@@ -445,6 +445,7 @@ final class UsageStore {
     /// narrower: it should not start the other provider's helper or spend a
     /// second endpoint request when the user asked about one ring.
     func refresh(_ account: AccountKey) {
+        if ClauthFetchGuard.isClauthSlot(account) { return ClauthFetchGuard.refresh(account) }
         // The same ceiling as the full pass, and for the same reason: this
         // path sets the flag too, so a ring click that never came back would
         // block every refresh after it.
@@ -583,6 +584,9 @@ final class UsageStore {
     func usage(for account: AccountKey) -> ProviderUsage {
         usage[account.id] ?? .unavailable(account, reason: .loading)
     }
+
+    /// clauth's readings replace every clauth slot at once (fork — `Clauth/ClauthWatcher`).
+    func applyClauth(_ readings: [String: ProviderUsage]) { usage = usage.filter { !ClauthFetchGuard.isClauthID($0.key) }.merging(readings) { $1 } }
 
     // MARK: - The loop
 

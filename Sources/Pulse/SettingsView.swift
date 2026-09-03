@@ -352,7 +352,7 @@ struct SettingsView: View {
                         // Moving something the rail isn't drawing looks like
                         // the arrow did nothing; saying so is kinder than
                         // hiding the row and renumbering everything.
-                        subtitle: settings.isEnabled(account) ? nil : String.localized("Not shown"),
+                        subtitle: ClauthVisibility.isShown(account, settings: settings) ? nil : String.localized("Not shown"),
                         icon: account.provider
                     ) {
                         HStack(spacing: 4) {

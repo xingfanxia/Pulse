@@ -29,6 +29,17 @@ let package = Package(
             resources: [
                 .process("Resources")
             ]
+        ),
+        // clauth integration (fork): `@testable import Pulse` over the
+        // executable target. Fixtures are copied whole so the directory
+        // survives into the bundle.
+        .testTarget(
+            name: "PulseTests",
+            dependencies: ["Pulse"],
+            path: "Tests/PulseTests",
+            resources: [
+                .copy("Fixtures")
+            ]
         )
     ]
 )

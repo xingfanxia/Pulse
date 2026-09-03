@@ -10,6 +10,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     let update = AppUpdate()
     private let placement = PanelPlacement.restored()
     private lazy var store = UsageStore(settings: settings)
+    private lazy var clauth = ClauthWatcher(settings: settings, store: store)
 
     private var panelController: FloatingPanelController?
     private var settingsWindow: SettingsWindowController?
@@ -49,6 +50,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         // Daily at most, and only from a bundle — see `AppUpdate`.
         update.checkIfDue()
 
+        clauth.start()
         store.start()
 
         let controller = FloatingPanelController(store: store, settings: settings, placement: placement)

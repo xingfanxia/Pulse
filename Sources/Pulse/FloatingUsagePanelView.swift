@@ -189,7 +189,7 @@ struct FloatingUsagePanelView: View {
             let usage = store.usage(for: account)
             return RailEntry(
                 usage: usage,
-                headline: usage.headlineWindow(preferring: settings.pinnedWindow(for: account)),
+                headline: usage.headlineWindow(preferring: settings.pinnedWindow(for: account) ?? ClauthMapping.defaultPin(for: account, in: usage)),
                 // Activity is per *provider*: a running CLI belongs to whichever
                 // account it happens to be signed in to, and the transcripts do
                 // not say which. Every account of that provider shows the mark.
@@ -199,7 +199,7 @@ struct FloatingUsagePanelView: View {
                 // Nil unless it is switched on *and* the window says enough to
                 // work it out — a reset time on its own is not enough.
                 elapsed: settings.showsWindowClock
-                    ? usage.headlineWindow(preferring: settings.pinnedWindow(for: account))?
+                    ? usage.headlineWindow(preferring: settings.pinnedWindow(for: account) ?? ClauthMapping.defaultPin(for: account, in: usage))?
                         .elapsedFraction(at: minute)
                     : nil,
                 showsRemaining: settings.showsRemaining
