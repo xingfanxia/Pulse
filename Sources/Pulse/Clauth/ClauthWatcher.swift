@@ -16,6 +16,13 @@ enum ClauthPaths {
         !(ProcessInfo.processInfo.environment["PULSE_CLAUTH_HOME"] ?? "").isEmpty
     }
 
+    /// `PULSE_OPEN_SETTINGS=1` opens the Settings window a moment after
+    /// launch — a sandbox affordance for driving the pane from a script when
+    /// the menu bar item is out of reach (a crowded bar hides it).
+    static var opensSettingsAtLaunch: Bool {
+        !(ProcessInfo.processInfo.environment["PULSE_OPEN_SETTINGS"] ?? "").isEmpty
+    }
+
     static func statusFile(in home: URL) -> URL { home.appending(path: "status.json") }
     static func socket(in home: URL) -> URL { home.appending(path: "clauthd.sock") }
 }

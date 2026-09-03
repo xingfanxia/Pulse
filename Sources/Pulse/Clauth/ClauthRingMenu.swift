@@ -132,6 +132,36 @@ enum ClauthPrompts {
         }
     }
 
+    /// A yes/no question with a consequence-aware message.
+    static func confirm(title: String, message: String, button: String, destructive: Bool = false) -> Bool {
+        let alert = NSAlert()
+        alert.messageText = title
+        alert.informativeText = message
+        alert.alertStyle = destructive ? .critical : .warning
+        alert.addButton(withTitle: button)
+        alert.addButton(withTitle: String.localized("Cancel"))
+        NSApp.activate(ignoringOtherApps: true)
+        return alert.runModal() == .alertFirstButtonReturn
+    }
+
+    /// One line of text. `secure` for a pasted token: never echoed, and the
+    /// value goes straight to the caller.
+    static func askText(title: String, message: String, initial: String = "", placeholder: String = "", button: String, secure: Bool = false) -> String? {
+        let alert = NSAlert()
+        alert.messageText = title
+        alert.informativeText = message
+        let field: NSTextField = secure ? NSSecureTextField(string: initial) : NSTextField(string: initial)
+        field.frame = NSRect(x: 0, y: 0, width: 260, height: 24)
+        field.placeholderString = placeholder
+        alert.accessoryView = field
+        alert.addButton(withTitle: button)
+        alert.addButton(withTitle: String.localized("Cancel"))
+        NSApp.activate(ignoringOtherApps: true)
+        alert.window.initialFirstResponder = field
+        guard alert.runModal() == .alertFirstButtonReturn else { return nil }
+        return field.stringValue
+    }
+
     static func rename(_ name: String, commit: (String) -> Void) {
         let alert = NSAlert()
         alert.messageText = String.localized("Rename \(name)")

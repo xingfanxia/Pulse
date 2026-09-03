@@ -52,6 +52,7 @@ struct SettingsView: View {
                 }
 
                 Section(String.localized("Accounts")) {
+                    row(.clauth)
                     // Same order as the rail: a sidebar that disagreed with
                     // the thing it configures is its own small confusion.
                     ForEach(settings.orderedAccounts) { account in
@@ -73,6 +74,7 @@ struct SettingsView: View {
                     switch pane {
                     case .general: general
                     case .account(let account): accountPane(account)
+                    case .clauth: ClauthSettingsPane(settings: settings, store: store)
                     case .about: about
                     }
                 }
@@ -116,7 +118,7 @@ struct SettingsView: View {
             switch pane {
             case .account(let account):
                 LobeIconView(provider: account.provider, size: 14)
-            case .general, .about:
+            case .general, .about, .clauth:
                 Image(systemName: pane.symbol)
             }
         }
@@ -545,9 +547,10 @@ struct SettingsView: View {
         store.refresh(account)
     }
 
+    @ViewBuilder
     private func accountPane(_ account: AccountKey) -> some View {
-        let provider = account.provider
-        return accountPaneBody(account, provider)
+        if ClauthFetchGuard.isClauthSlot(account) { ClauthAccountPane(account: account, settings: settings, store: store) } else {
+        accountPaneBody(account, account.provider) }
     }
 
     private func accountPaneBody(_ account: AccountKey, _ provider: Provider) -> some View {
@@ -733,7 +736,7 @@ struct SettingsView: View {
     private func loadHistory() async {
         // History is per provider — it is read from that CLI's transcripts,
         // which do not say which account was signed in at the time.
-        guard case .account(let account) = pane else { return }
+        guard case .account(let account) = pane, !ClauthFetchGuard.isClauthSlot(account) else { return }
         let provider = account.provider
 
         loadingHistory = provider
@@ -1401,6 +1404,7 @@ struct SettingsView: View {
 enum SettingsPane: Hashable {
     case general
     case account(AccountKey)
+    case clauth
     case about
 
     var title: String {
@@ -1409,6 +1413,7 @@ enum SettingsPane: Hashable {
         // Brand names, left as they are in every language.
         // A fallback: the view titles these from the account's own label.
         case .account(let account): account.provider.displayName
+        case .clauth: "clauth"
         case .about: .localized("About")
         }
     }
@@ -1419,6 +1424,7 @@ enum SettingsPane: Hashable {
         switch self {
         case .general: "slider.horizontal.3"
         case .account: "square.stack.3d.up"
+        case .clauth: "arrow.triangle.2.circlepath"
         case .about: "info.circle"
         }
     }

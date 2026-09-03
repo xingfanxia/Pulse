@@ -1,0 +1,12 @@
+model_provider = "clauth"
+model = "gpt-5-codex"
+approval_policy = "never"
+
+[projects."/Users/xingfanxia/projects/demo"]
+trust_level = "trusted"
+
+[model_providers.clauth]
+name = "openai"
+base_url = "http://127.0.0.1:4517/backend-api/codex"
+wire_api = "responses"
+requires_openai_auth = true

@@ -1,6 +1,6 @@
 # CLP — Pulse × clauth: the rail absorbs ccsbar
 
-Status: **CLP-0 planned 2026-09-02, two adversarial review rounds (42+37 findings, 25+18 upheld, all folded in)** · executes as one `/goal` (`GOAL-PROMPTS.md`) · CLP-1 → CLP-3 in this run, CLP-4 human-gated.
+Status: **CLP-1 → CLP-3 shipped 2026-09-03** (one `/goal` run; ledgers under `.agent/`, evidence under `Docs/clauth/evidence/`, closeout `CLP-CLOSEOUT-2026-09-03.md`, parity `PARITY.md`) · CLP-4 human-gated. Planned 2026-09-02 after two adversarial review rounds (42+37 findings, 25+18 upheld, all folded in).
 
 ## Objective
 

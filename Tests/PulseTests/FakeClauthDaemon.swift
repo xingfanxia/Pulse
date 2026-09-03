@@ -56,7 +56,7 @@ final class FakeClauthDaemon: @unchecked Sendable {
         let bound = withUnsafePointer(to: &address) { pointer in
             pointer.withMemoryRebound(to: sockaddr.self, capacity: 1) { bind(fd, $0, size) }
         }
-        guard bound == 0, listen(fd, 8) == 0 else { throw NSError(domain: "fake", code: 3) }
+        guard bound == 0, listen(fd, 64) == 0 else { throw NSError(domain: "fake", code: 3) }
         let thread = Thread { [self] in loop() }
         thread.name = "FakeClauthDaemon"
         self.thread = thread

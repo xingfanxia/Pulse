@@ -189,6 +189,11 @@ enum ClauthCLI {
         [name]
     }
 
+    /// `clauth feed <name> on|off` — the rolling-token flag.
+    static func feedArgs(_ name: String, on: Bool) -> [String] {
+        ["feed", name, on ? "on" : "off"]
+    }
+
     /// The whole refusal, newlines flattened; empty stderr falls back to the
     /// exit status.
     static func failureReason(stderr: String, exitStatus: Int32, verb: String) -> String {
