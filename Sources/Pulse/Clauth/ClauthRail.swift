@@ -136,12 +136,21 @@ struct ClauthRingExtras: View {
     /// What the collapsed sliver's alert colour looks at for an entry: the
     /// headline, and for a clauth ring the inner window too — after the
     /// default pin moved to the week, the 5h limit that actually blocks a
-    /// session is no longer the headline.
+    /// session is no longer the headline. A clauth ring that is NOT its
+    /// harness's active slot contributes nothing: a spent backup is the
+    /// daemon's rotation business, not an alarm on the account you are
+    /// running on (AX 2026-09-03: 「只是一个账号没了 不需要报警吧」).
     @MainActor
     static func alertWindows(_ entry: RailEntry) -> [UsageWindow] {
+        alertWindows(entry, status: ClauthWatcher.current?.status)
+    }
+
+    @MainActor
+    static func alertWindows(_ entry: RailEntry, status: ClauthStatus?) -> [UsageWindow] {
         guard let headline = entry.headline else { return [] }
-        guard ClauthMapping.harness(of: entry.usage.account) != nil, ClauthVisibility.shared.innerRing,
-              let inner = innerWindow(for: entry.usage, pinned: headline.id) else { return [headline] }
+        guard ClauthMapping.harness(of: entry.usage.account) != nil else { return [headline] }
+        guard ClauthCaption.isActive(entry.usage.account, status: status) else { return [] }
+        guard ClauthVisibility.shared.innerRing, let inner = innerWindow(for: entry.usage, pinned: headline.id) else { return [headline] }
         return [headline, inner]
     }
 

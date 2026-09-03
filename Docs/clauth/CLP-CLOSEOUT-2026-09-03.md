@@ -11,7 +11,7 @@ Pulse fork `xingfanxia/Pulse`, `main` at the commits listed at the end (CLP-1 `b
 
 ## Addendum 2026-09-03 (after the closeout): CLP-5 + the defaults leak
 
-- CLP-5 shipped at AX's ask the same night: labels under rings (email local part by default), the active account's label in a solid accent capsule, the week as the outer ring with the 5h window as an inner arc, upstream's working mark off by default. Controls: Settings → clauth → Rail.
+- CLP-5 shipped at AX's ask the same night: labels under rings (email local part by default), the active account's label in a solid accent capsule, the week as the outer ring with the 5h window as an inner arc, upstream's working mark off by default, frosted dark glass for the rail/card/sliver, and the collapsed sliver's alert colour taken from the active accounts only. Controls: Settings → clauth → Rail.
 - The installed bundle had imported the bare build's `Pulse` defaults domain on its first run (upstream's `LegacyDefaults` loose-build migration), which switched auto-collapse OFF and left only the two hidden primaries enabled. Auto-collapse is back to upstream's default; the `Pulse` domain is wiped. Still imported and left as-is: `settings.enabledProviders = (claudeCode, codex)` — Cursor and the rest are a switch away in Settings → Accounts; `settings.launchAtLogin.decided = 1` — Pulse did NOT register a login item; turn it on in Settings → General if you want the rail at login.
 
 ## AX 首次手动动作清单 (in this order)

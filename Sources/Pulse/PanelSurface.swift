@@ -45,6 +45,8 @@ struct PanelSurface<S: Shape>: View {
     private var surface: some View {
         if usesGlass {
             glass
+        } else if ClauthVisibility.shared.frostedSurface {
+            ClauthFrostedSurface(shape: shape, tint: tint)
         } else {
             shape.fill(tint ?? .black)
         }

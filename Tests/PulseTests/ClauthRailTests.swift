@@ -106,19 +106,26 @@ final class ClauthRailTests: XCTestCase {
     }
 
     @MainActor
-    func testSliverAlertSeesTheInnerWindowOfAClauthRingOnly() throws {
+    func testSliverAlertSeesBothWindowsOfTheActiveClauthRingAndIgnoresBackups() throws {
         let status = try ClauthFixture.status()
+        // fx-main is the active claude slot: weekly outside, 5h inside — both count.
+        let main = ClauthMapping.usage(for: try ClauthFixture.profile("fx-main", in: status), freshness: .live)
+        let active = RailEntry(usage: main, headline: try XCTUnwrap(main.headlineWindow(preferring: "7d")))
+        XCTAssertEqual(ClauthRingExtras.alertWindows(active, status: status).map(\.id), ["7d", "5h"])
+        // fx-cl is a spent BACKUP: the daemon's rotation business, never an alarm.
         let cl = ClauthMapping.usage(for: try ClauthFixture.profile("fx-cl", in: status), freshness: .live)
-        let weekly = try XCTUnwrap(cl.headlineWindow(preferring: "7d"))
-        let entry = RailEntry(usage: cl, headline: weekly)
-        let state = ClauthVisibility(defaults: nil)
-        XCTAssertTrue(state.innerRing)
-        // fx-cl: weekly 67 % outside, the SPENT 5h inside — the sliver must see the 5h.
-        let windows = ClauthRingExtras.alertWindows(entry)
-        XCTAssertEqual(windows.map(\.id), ["7d", "5h"])
-        XCTAssertTrue(windows.contains { $0.isExhausted })
+        let backup = RailEntry(usage: cl, headline: try XCTUnwrap(cl.headlineWindow(preferring: "7d")))
+        XCTAssertTrue(cl.windows.contains { $0.isExhausted })
+        XCTAssertEqual(ClauthRingExtras.alertWindows(backup, status: status), [])
+        // A spent active codex slot still alarms.
+        let flipped = try ClauthFixture.status { $0["active_codex_profile"] = "fx-codex-xfx" }
+        let xfx = ClauthMapping.usage(for: try ClauthFixture.profile("fx-codex-xfx", in: flipped), freshness: .live)
+        let codex = RailEntry(usage: xfx, headline: try XCTUnwrap(xfx.headlineWindow(preferring: "7d")))
+        XCTAssertEqual(ClauthRingExtras.alertWindows(codex, status: flipped).map(\.id), ["7d"])
+        XCTAssertEqual(ClauthRingExtras.alertWindows(codex, status: status), [], "the same ring, not active ⇒ silent")
+        // Pulse's own rings keep upstream's rule: the headline.
         let primary = RailEntry(usage: .unavailable(.cursor, reason: .loading), headline: nil)
-        XCTAssertEqual(ClauthRingExtras.alertWindows(primary), [])
+        XCTAssertEqual(ClauthRingExtras.alertWindows(primary, status: status), [])
     }
 
     func testInnerArcDrawsFullForASpentWindowEitherWayRound() throws {
@@ -152,10 +159,10 @@ final class ClauthRailTests: XCTestCase {
         let before = PanelMetrics.showsCaptions
         defer { PanelMetrics.showCaptions(before) }
         let fresh = ClauthVisibility(defaults: defaults)
-        XCTAssertTrue(fresh.railCaptions); XCTAssertTrue(fresh.innerRing); XCTAssertEqual(fresh.activity, .off); XCTAssertEqual(fresh.captionStyle, .email)
-        fresh.railCaptions = false; fresh.innerRing = false; fresh.activity = .all; fresh.captionStyle = .name
+        XCTAssertTrue(fresh.railCaptions); XCTAssertTrue(fresh.innerRing); XCTAssertEqual(fresh.activity, .off); XCTAssertEqual(fresh.captionStyle, .email); XCTAssertTrue(fresh.frostedSurface)
+        fresh.railCaptions = false; fresh.innerRing = false; fresh.activity = .all; fresh.captionStyle = .name; fresh.frostedSurface = false
         XCTAssertFalse(PanelMetrics.showsCaptions, "a persisted instance mirrors the metric on change")
         let again = ClauthVisibility(defaults: defaults)
-        XCTAssertFalse(again.railCaptions); XCTAssertFalse(again.innerRing); XCTAssertEqual(again.activity, .all); XCTAssertEqual(again.captionStyle, .name)
+        XCTAssertFalse(again.railCaptions); XCTAssertFalse(again.innerRing); XCTAssertEqual(again.activity, .all); XCTAssertEqual(again.captionStyle, .name); XCTAssertFalse(again.frostedSurface)
     }
 }

@@ -74,6 +74,23 @@ struct ClauthSettingsPane: View {
     private var railGroup: some View {
         SettingsGroup(String.localized("Rail")) {
             SettingsRow(
+                String.localized("Frosted dark surface"),
+                subtitle: settings.usesGlass
+                    ? String.localized("Liquid Glass is on in General and takes precedence.")
+                    : String.localized("Blurred dark glass for the rail and the card instead of flat black; the collapsed sliver’s alert colour becomes a wash.")
+            ) {
+                Toggle("", isOn: Binding(
+                    get: { ClauthVisibility.shared.frostedSurface },
+                    set: { ClauthVisibility.shared.frostedSurface = $0 }
+                ))
+                .labelsHidden()
+                .toggleStyle(.switch)
+                .disabled(settings.usesGlass)
+            }
+
+            SettingsRowDivider()
+
+            SettingsRow(
                 String.localized("Labels under rings"),
                 subtitle: String.localized("The account under each ring, the active one in a capsule. Widens the rail; side rails only.")
             ) {

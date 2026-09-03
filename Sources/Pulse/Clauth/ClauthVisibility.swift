@@ -105,6 +105,16 @@ final class ClauthVisibility {
         }
     }
 
+    /// Frosted dark material for the rail and the card instead of flat
+    /// black (AX 2026-09-03: the collapsed sliver as a solid colour block was
+    /// ugly). Liquid Glass, when on, still wins.
+    var frostedSurface: Bool {
+        didSet {
+            guard frostedSurface != oldValue else { return }
+            defaults?.set(frostedSurface, forKey: Key.frostedSurface)
+        }
+    }
+
     private let defaults: UserDefaults?
 
     /// `defaults: nil` keeps the state in memory only (tests).
@@ -116,7 +126,8 @@ final class ClauthVisibility {
         railCaptions: Bool? = nil,
         innerRing: Bool? = nil,
         activity: Activity? = nil,
-        captionStyle: CaptionStyle? = nil
+        captionStyle: CaptionStyle? = nil,
+        frostedSurface: Bool? = nil
     ) {
         self.defaults = defaults
         self.hiddenAccounts = hiddenAccounts ?? Set(defaults?.stringArray(forKey: Key.hidden) ?? [])
@@ -128,6 +139,7 @@ final class ClauthVisibility {
         // the mark never stopped, and it says nothing about the account.
         self.activity = activity ?? (defaults?.string(forKey: Key.activity)).flatMap(Activity.init(rawValue:)) ?? .off
         self.captionStyle = captionStyle ?? (defaults?.string(forKey: Key.captionStyle)).flatMap(CaptionStyle.init(rawValue:)) ?? .email
+        self.frostedSurface = frostedSurface ?? (defaults?.object(forKey: Key.frostedSurface) as? Bool ?? true)
     }
 
     /// The rail's shown accounts, from the UNFILTERED user order so a drag
@@ -209,5 +221,6 @@ final class ClauthVisibility {
         static let innerRing = "clauth.innerRing"
         static let activity = "clauth.activity"
         static let captionStyle = "clauth.captionStyle"
+        static let frostedSurface = "clauth.frostedSurface"
     }
 }
