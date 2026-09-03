@@ -427,6 +427,7 @@ private struct UsageDockItem: View {
         .accessibilityHint(String.localized("Activate to refresh usage."))
         .accessibilityAddTraits(.isButton)
         .accessibilityAction(named: Text(String.localized("Refresh usage")), onRefresh)
+        .modifier(ClauthRingMenuModifier(account: usage.account))
     }
 
     /// Lifted out of `body` because the initializer has enough arguments that

@@ -1,4 +1,5 @@
 import Foundation
+import Observation
 
 /// Where clauth's files are. `PULSE_CLAUTH_HOME` redirects everything to a
 /// sandbox — a fixture feed, a fake socket, a recording shim — so development
@@ -25,14 +26,19 @@ enum ClauthPaths {
 /// liveness is re-judged every tick regardless, because a dead daemon is
 /// exactly a file that stopped moving.
 @MainActor
+@Observable
 final class ClauthWatcher {
-    /// The running watcher, for the ring-click refresh hook.
+    /// The running watcher: the ring menu, the card footer and the ring-click
+    /// refresh hook all reach clauth through it.
     private(set) static var current: ClauthWatcher?
 
     static let pollInterval: TimeInterval = 2
 
     let home: URL
-    private let settings: AppSettings
+    let settings: AppSettings
+    let client: ClauthDaemonClient
+    let switches: ClauthSwitchController
+    let actions: ClauthActions
     private let store: UsageStore
     private let visibility: ClauthVisibility
     private var timer: Timer?
@@ -43,11 +49,23 @@ final class ClauthWatcher {
     private(set) var status: ClauthStatus?
     private(set) var freshness: ClauthLiveness.Freshness = .dead
 
-    init(settings: AppSettings, store: UsageStore, home: URL = ClauthPaths.home, visibility: ClauthVisibility = .shared) {
+    init(
+        settings: AppSettings,
+        store: UsageStore,
+        home: URL = ClauthPaths.home,
+        visibility: ClauthVisibility = .shared,
+        switchTiming: ClauthSwitchController.Timing = ClauthSwitchController.Timing()
+    ) {
         self.settings = settings
         self.store = store
         self.home = home
         self.visibility = visibility
+        let client = ClauthDaemonClient(home: home)
+        self.client = client
+        switches = ClauthSwitchController(client: client, timing: switchTiming)
+        actions = ClauthActions(client: client)
+        switches.watcher = self
+        actions.watcher = self
     }
 
     /// Reads once, synchronously, then keeps reading. Called before
@@ -56,6 +74,7 @@ final class ClauthWatcher {
     func start() {
         guard timer == nil else { return }
         Self.current = self
+        ClauthPrompts.installArmAlert(on: switches)
         tick()
         let timer = Timer(timeInterval: Self.pollInterval, repeats: true) { [weak self] _ in
             MainActor.assumeIsolated { self?.tick() }
@@ -76,8 +95,10 @@ final class ClauthWatcher {
         tick()
     }
 
+    /// A ring click: the daemon `refresh` verb (a re-fetch of that profile's
+    /// usage), then a re-read of the feed.
     func refresh(_ account: AccountKey) {
-        reload()
+        actions.refresh(ClauthMapping.profileName(of: account))
     }
 
     func tick(now: Date = Date()) {
@@ -104,6 +125,7 @@ final class ClauthWatcher {
             : ClauthLiveness.freshness(generatedAtAge: generatedAge, statusMtimeAge: mtimeAge)
 
         publish(now: now)
+        switches.observed(status)
     }
 
     private func publish(now: Date) {

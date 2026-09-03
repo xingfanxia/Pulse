@@ -122,6 +122,8 @@ struct UsageDetailCard: View {
                 )
             }
 
+            ClauthCardFooter(account: usage.account)
+
             if case .unavailable(let reason) = usage.state {
                 Text(reason.message)
                     .font(.system(size: DetailCardLayout.messageFontSize, weight: .regular, design: .rounded))
@@ -171,7 +173,8 @@ struct UsageDetailCard: View {
     /// figures only refresh while a session is running, so an old reading has
     /// to say so rather than pass for current.
     private var footnote: String? {
-        switch usage.state {
+        if let footnote = ClauthCardFooter.footnote(for: usage) { return footnote }
+        return switch usage.state {
         case .live, .unavailable:
             nil
         case .stale:
