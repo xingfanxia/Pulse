@@ -129,6 +129,8 @@ Legend: ✅ landed · ➖ not done, reason stated.
 ## Closing evidence
 
 ```
+06f9aa1 clp(3): test — wait for the feed spawn before the delete spawn; the two landed in either order under load
+02e7594 clp(3): the control pane, ccsbar parity, installed — chain editor over the ten socket verbs, proxy mode, rolling token, add/rename/delete, clauth account pane, closeout
 d72c51c clp(2): switch from the ring, the card knows the chain — context menu, settle ladder, one spawn door
 b9b4801 clp(1): clauth accounts on the rail, read-only — one ring per profile from status.json, zero tokens
 daca967 clp(0): Task 0 baseline re-run + understanding receipt
@@ -140,7 +142,7 @@ e8342d3 clp(0): verify script — an apostrophe inside ${VAR:?msg} broke bash's 
 ee4b674 clp(0): plan + contract revised after the adversarial pass — visibility owned by Clauth/, CLI containment via PULSE_CLAUTH_BIN, frozen graders at 2c00886, contract facts corrected (session_feed, one global wrap-off, 7 published profiles)
 2c00886 clp(0): the frozen graders — clauth-verify.sh (7 gates) and clauth-hook-budget.sh (added lines in upstream-owned files ≤ budget)
 8a003f3 clp(0): CLP plan, goal contract and ledgers — Pulse absorbs ccsbar over the clauth data plane
-(this closeout is committed as the next clp(3) commit)
+(this ledger commit follows as one more clp(3) docs commit)
 
 git diff 56754d6 -- Scripts/clauth-verify.sh Scripts/clauth-hook-budget.sh Makefile →
 (empty above = graders untouched)
