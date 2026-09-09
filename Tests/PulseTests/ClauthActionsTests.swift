@@ -155,9 +155,9 @@ extension ClauthActionsTests {
         let a3 = await waitUntil(3) { actions.loginInFlight == nil }; XCTAssertTrue(a3)
         actions.installSetupToken("fx-main", token: "  \(mint)\n")
         let a4 = await waitUntil(3) { actions.loginInFlight == nil }; XCTAssertTrue(a4)
-        actions.setFeed("fx-main", on: false)
+        actions.setRollingToken("fx-main", on: false)
         // Two CLI spawns fired back to back land in either order; wait for
-        // the feed to be recorded before the delete goes out.
+        // the restore to be recorded before the delete goes out.
         let a5 = await waitUntil(3) { recorded.launches.count == 5 }; XCTAssertTrue(a5)
         actions.delete("fx-backup")
         let a6 = await waitUntil(3) { actions.deleteInFlight == nil && recorded.launches.count == 6 }; XCTAssertTrue(a6)
@@ -167,7 +167,7 @@ extension ClauthActionsTests {
             ["login", "--new", "fx-codex-new", "--codex"],
             ["login", "--new", "fx-codex-web", "--codex", "--browser"],
             ["login", "fx-main", "--setup-token", "--yes"],
-            ["feed", "fx-main", "off"],
+            ["static-token", "fx-main"],
             ["delete", "fx-backup", "--yes"],
         ])
         XCTAssertEqual(recorded.launches[3].stdin, mint, "the mint goes down the pipe, trimmed")
@@ -184,6 +184,51 @@ extension ClauthActionsTests {
         print("shim argv: \(recorded.launches.map(\.arguments))")
     }
 
+    /// THE GATE THAT WAS MISSING. Every verb `ClauthCLI` can emit, probed
+    /// against the installed clauth with `--help` — a read-only call that
+    /// touches no credential and no daemon state.
+    ///
+    /// Asserting a literal argv is not enough on its own: `clauth feed <p>
+    /// on|off` was removed by upstream and this suite stayed green for a whole
+    /// sync while Pulse's rolling-token switch spawned a verb that exits 2
+    /// (found 2026-09-09, by auditing the deployed daemon rather than by any
+    /// test). A verb the CLI does not recognise now fails HERE.
+    ///
+    /// Skipped, not failed, when clauth is not installed: this suite must pass
+    /// on a machine that has never run the daemon.
+    func testEveryVerbPulseCanEmitIsRecognisedByTheInstalledCLI() async throws {
+        // Resolve through the SAME resolver the app uses, never a `which`
+        // subprocess: every spawn in this repo goes through `ClauthCLI` so it
+        // passes the sandbox refusal, and a test is not exempt from that.
+        try XCTSkipIf(ClauthCLI.clauthBinary() == nil, "clauth is not installed")
+
+        // The first token of every argv builder Pulse owns, de-duplicated.
+        let verbs = Set(
+            [
+                ClauthCLI.loginArgs("p", newOnly: true, codex: false, browser: false),
+                ClauthCLI.loginArgs("p", newOnly: false, codex: true, browser: true),
+                ClauthCLI.setupTokenArgs("p"),
+                ClauthCLI.rollingTokenArgs("p", on: true),
+                ClauthCLI.rollingTokenArgs("p", on: false),
+                ClauthCLI.deleteArgs("p"),
+            ].compactMap(\.first)
+        )
+        XCTAssertTrue(verbs.contains("rolling-token") && verbs.contains("static-token"))
+
+        for verb in verbs.sorted() {
+            let outcome = await ClauthCLI.run(
+                program: ClauthCLI.clauth,
+                arguments: [verb, "--help"],
+                stdin: nil,
+                environment: ClauthCLI.Environment(sandboxHome: nil, sandboxBin: nil)
+            )
+            XCTAssertTrue(
+                outcome.isOK,
+                "`clauth \(verb) --help` was refused — the installed CLI has no such verb: \(outcome)"
+            )
+        }
+    }
+
     func testARealShimRecordsTheArgvUnderTheSandboxEnvironment() async throws {
         let home = FileManager.default.temporaryDirectory.appending(path: "clp-shim2-\(UUID().uuidString)")
         try FileManager.default.createDirectory(at: home.appending(path: "bin"), withIntermediateDirectories: true)
@@ -192,12 +237,26 @@ extension ClauthActionsTests {
         try "#!/bin/bash\nprintf '%s\\n' \"$*\" >> \"\(log.path)\"\ncat >/dev/null\n".write(to: shim, atomically: true, encoding: .utf8)
         try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: shim.path)
         let sandboxed = ClauthCLI.Environment(sandboxHome: home.path, sandboxBin: shim.path)
-        for arguments in [ClauthCLI.loginArgs("fx-main", newOnly: false, codex: false, browser: true), ClauthCLI.setupTokenArgs("fx-main"), ClauthCLI.deleteArgs("fx-backup")] {
+        // The rolling-token pair is in this loop deliberately: asserting a
+        // literal argv is what let `clauth feed` survive its own removal
+        // through a whole upstream sync with a green suite. Spawning the verb
+        // at least proves the shape Pulse emits is the shape it means to.
+        for arguments in [ClauthCLI.loginArgs("fx-main", newOnly: false, codex: false, browser: true), ClauthCLI.setupTokenArgs("fx-main"), ClauthCLI.rollingTokenArgs("fx-main", on: true), ClauthCLI.rollingTokenArgs("fx-main", on: false), ClauthCLI.deleteArgs("fx-backup")] {
             let outcome = await ClauthCLI.run(program: ClauthCLI.clauth, arguments: arguments, stdin: arguments.contains("--setup-token") ? "sk-ant-secret" : nil, environment: sandboxed)
             XCTAssertTrue(outcome.isOK)
         }
         let recorded = try String(contentsOf: log, encoding: .utf8)
-        XCTAssertEqual(recorded, "clauth login fx-main\nclauth login fx-main --setup-token --yes\nclauth delete fx-backup --yes\n")
+        XCTAssertEqual(
+            recorded,
+            """
+            clauth login fx-main
+            clauth login fx-main --setup-token --yes
+            clauth rolling-token fx-main
+            clauth static-token fx-main
+            clauth delete fx-backup --yes
+
+            """
+        )
         XCTAssertFalse(recorded.contains("sk-ant-secret"), "stdin is never in the shim's argv")
     }
 }

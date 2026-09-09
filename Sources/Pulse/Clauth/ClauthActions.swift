@@ -224,12 +224,12 @@ final class ClauthActions {
         }
     }
 
-    /// `clauth feed <name> on|off` — the rolling-token flag on the deployed
-    /// daemon (upstream's later spelling is `rolling-token`).
-    func setFeed(_ name: String, on: Bool) {
+    /// `clauth rolling-token <name>` / `clauth static-token <name>` — arm the
+    /// rolling bearer, or restore the static mint it superseded.
+    func setRollingToken(_ name: String, on: Bool) {
         let run = run
         Task { [weak self] in
-            let outcome = await run(ClauthCLI.clauth, ClauthCLI.feedArgs(name, on: on), nil)
+            let outcome = await run(ClauthCLI.clauth, ClauthCLI.rollingTokenArgs(name, on: on), nil)
             guard let self else { return }
             if let message = Self.loginFailureMessage(outcome, name: name) {
                 self.showError(message)

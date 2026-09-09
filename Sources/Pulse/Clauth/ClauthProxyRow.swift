@@ -57,7 +57,8 @@ struct ClauthProxyRow: View {
 }
 
 /// A claude profile's rolling-token row: the flag as status.json reports it
-/// (never the sidecar file), the feed switch, and the mint install.
+/// what the SIDECAR HOLDS (`rolling_token` is content-classified, not the
+/// config flag), the arm/restore switch, and the mint install.
 struct ClauthTokenRow: View {
     let profile: ClauthStatus.Profile
     let watcher: ClauthWatcher
@@ -70,7 +71,7 @@ struct ClauthTokenRow: View {
                     .help(String.localized("Paste a claude setup-token mint; it goes down a pipe to clauth login --setup-token, never through the shell."))
                 Toggle("", isOn: Binding(
                     get: { profile.rollingToken },
-                    set: { watcher.actions.setFeed(profile.name, on: $0) }
+                    set: { watcher.actions.setRollingToken(profile.name, on: $0) }
                 ))
                 .labelsHidden()
                 .toggleStyle(.switch)

@@ -189,9 +189,20 @@ enum ClauthCLI {
         [name]
     }
 
-    /// `clauth feed <name> on|off` — the rolling-token flag.
-    static func feedArgs(_ name: String, on: Bool) -> [String] {
-        ["feed", name, on ? "on" : "off"]
+    /// The rolling-token verbs. NOT a one-argument on/off pair: clauth 0.15.1
+    /// (upstream's merged form of the fork's own PR #59) split the old
+    /// `clauth feed <name> on|off` into two verbs that each take a bare
+    /// profile name — `rolling-token <p>` arms it, `static-token <p>` restores
+    /// the preserved mint. The `feed` verb is GONE, and Pulse kept calling it
+    /// through the sync: the toggle spawned `clauth feed <p> on`, which exits 2
+    /// with "unrecognized command" (found 2026-09-09, after the fact).
+    ///
+    /// `static-token` is deliberately the BARE form. Its `--clear` variant is a
+    /// different operation — it removes the long-lived token, the preserved
+    /// mint AND the flag together — and a switch flipped off must not delete a
+    /// credential the operator can no longer get back.
+    static func rollingTokenArgs(_ name: String, on: Bool) -> [String] {
+        on ? ["rolling-token", name] : ["static-token", name]
     }
 
     /// The whole refusal, newlines flattened; empty stderr falls back to the

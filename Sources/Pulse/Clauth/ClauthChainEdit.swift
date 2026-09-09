@@ -84,7 +84,9 @@ enum ClauthChainEdit {
 enum ClauthNameValidation {
     static let reservedNames: Set<String> = [
         "daemon", "status", "doctor", "which", "start", "login", "delete", "disable", "enable",
-        "fallback", "proxy", "resume", "run", "mcp", "feed", "sessions", "info", "completions", "help",
+        "fallback", "proxy", "resume", "run", "mcp", "sessions", "info", "completions", "help",
+        // 0.15.1's own additions, and the two verbs that replaced `feed`.
+        "rolling-token", "static-token", "capture", "list", "jobs", "herdr",
         "__complete", "mcp-await-job",
     ]
 
