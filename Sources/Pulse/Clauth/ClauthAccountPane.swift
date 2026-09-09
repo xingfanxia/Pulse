@@ -4,6 +4,26 @@ import SwiftUI
 /// window, colour) plus the reading and the account's verbs — and none of
 /// upstream's Sign out / rename field / Remove account: clauth owns the
 /// login, and renaming or deleting lives in the clauth pane's confirms.
+extension ClauthAccountPane {
+    /// The Settings detail pane for one account: this pane for a clauth slot,
+    /// `upstream` for every other account. The branch lives here rather than in
+    /// `SettingsView` so the upstream file carries a call site and nothing else
+    /// — the one architectural rule of this integration.
+    @ViewBuilder
+    static func orUpstream<Upstream: View>(
+        _ account: AccountKey,
+        settings: AppSettings,
+        store: UsageStore,
+        upstream: (AccountKey) -> Upstream
+    ) -> some View {
+        if ClauthFetchGuard.isClauthSlot(account) {
+            ClauthAccountPane(account: account, settings: settings, store: store)
+        } else {
+            upstream(account)
+        }
+    }
+}
+
 struct ClauthAccountPane: View {
     let account: AccountKey
     let settings: AppSettings

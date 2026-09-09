@@ -60,6 +60,21 @@ enum ClauthCaption {
 /// capsule, the way a selected segment does; the others are plain dim type.
 /// The ring itself carries no mark (AX 2026-09-03: a corner dot read as a
 /// notification badge).
+extension ClauthRailCaption {
+    /// The vertical room one caption needs inside a rail item, in points — the
+    /// term `DockLayout` adds to `ringOffsetInItem` and `itemLength`. Zero
+    /// unless captions are on AND the rail runs down a side: across the top
+    /// the caption would double the rail's height for one line of text.
+    /// `spacing` is `DockLayout.ringToTextSpacing`, passed in rather than read,
+    /// so this stays a pure function of the layout it is asked about.
+    nonisolated static func height(on axis: PanelEdge.Axis, spacing: CGFloat) -> CGFloat {
+        PanelMetrics.showsCaptions && axis == .vertical ? spacing + 13 * PanelMetrics.scale : 0
+    }
+
+    /// How much wider a side rail gets to fit an email caption, in points.
+    nonisolated static var widening: CGFloat { PanelMetrics.showsCaptions ? 24 * PanelMetrics.scale : 0 }
+}
+
 struct ClauthRailCaption: View {
     let account: AccountKey
 

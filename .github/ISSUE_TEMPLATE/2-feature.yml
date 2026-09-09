@@ -5,7 +5,26 @@ labels: ["enhancement"]
 body:
   - type: markdown
     attributes:
-      value: "English or 中文, whichever you'd rather. 中英文都可以。"
+      value: "English or 中文， whichever you'd rather. 中英文都可以。"
+
+  - type: markdown
+    attributes:
+      value: >
+        Asking for a new service to be supported? Use **New provider · 新服务**
+        instead — it asks the questions that decide whether it can be done.
+        想请求支持一个新的服务？请改用 **New provider · 新服务** 模板，
+        那里的几个问题直接决定了能不能做。
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What kind of request? / 属于哪一类
+      options:
+        - The panel or the rail · 悬浮面板或胶囊
+        - Settings, or an existing provider · 设置，或已支持的服务
+        - Something else · 其他
+    validations:
+      required: true
 
   - type: textarea
     id: request
@@ -21,3 +40,11 @@ body:
       description: What you do about it today. 你现在是怎么解决的。
     validations:
       required: false
+
+  - type: checkboxes
+    id: secrets
+    attributes:
+      label: Before posting / 发布前
+      options:
+        - label: No API key, token, cookie or account id in my request or screenshots. 内容和截图中不含密钥、令牌、cookie 或账号 id。
+          required: true

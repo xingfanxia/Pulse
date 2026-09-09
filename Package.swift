@@ -30,13 +30,17 @@ let package = Package(
                 .process("Resources")
             ]
         ),
-        // clauth integration (fork): `@testable import Pulse` over the
-        // executable target. Fixtures are copied whole so the directory
-        // survives into the bundle.
+        // Tests the executable target directly rather than through a library
+        // split. Pulse is one app, not a framework with an app on top, and
+        // carving sixty-nine files into two targets to make them reachable would be a
+        // refactor in service of the test runner. SwiftPM has been able to
+        // `@testable import` an executable target since Swift 5.5.
         .testTarget(
             name: "PulseTests",
             dependencies: ["Pulse"],
             path: "Tests/PulseTests",
+            // Captured provider replies, kept as the files they arrived as so
+            // a diff against a changed schema is readable.
             resources: [
                 .copy("Fixtures")
             ]

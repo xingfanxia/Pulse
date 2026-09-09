@@ -77,14 +77,14 @@ final class ClauthRailTests: XCTestCase {
         PanelMetrics.showCaptions(false)
         let plainWidth = DockLayout.width, plainThick = DockLayout.thickness(on: .vertical), plainLength = DockLayout.itemLength(on: .vertical)
         let plainTop = DockLayout.itemLength(on: .horizontal), plainTopThick = DockLayout.thickness(on: .horizontal)
-        XCTAssertEqual(DockLayout.captionHeight(on: .vertical), 0)
+        XCTAssertEqual(ClauthRailCaption.height(on: .vertical, spacing: DockLayout.ringToTextSpacing), 0)
         PanelMetrics.showCaptions(true)
         XCTAssertEqual(DockLayout.width, plainWidth, "the berth's own width is upstream's")
         XCTAssertEqual(DockLayout.thickness(on: .vertical), plainThick + 24 * PanelMetrics.scale, "88pt side rail for the names")
         XCTAssertEqual(DockLayout.thickness(on: .horizontal), plainTopThick, "the top rail is not widened for captions it never draws")
-        XCTAssertEqual(DockLayout.captionHeight(on: .vertical), DockLayout.ringToTextSpacing + 13 * PanelMetrics.scale)
-        XCTAssertEqual(DockLayout.itemLength(on: .vertical), plainLength + DockLayout.captionHeight(on: .vertical))
-        XCTAssertEqual(DockLayout.captionHeight(on: .horizontal), 0)
+        XCTAssertEqual(ClauthRailCaption.height(on: .vertical, spacing: DockLayout.ringToTextSpacing), DockLayout.ringToTextSpacing + 13 * PanelMetrics.scale)
+        XCTAssertEqual(DockLayout.itemLength(on: .vertical), plainLength + ClauthRailCaption.height(on: .vertical, spacing: DockLayout.ringToTextSpacing))
+        XCTAssertEqual(ClauthRailCaption.height(on: .horizontal, spacing: DockLayout.ringToTextSpacing), 0)
         XCTAssertEqual(DockLayout.itemLength(on: .horizontal), plainTop, "no captions across the top")
         XCTAssertEqual(DockLayout.length(for: 7, on: .vertical), DockLayout.endPadding(docked: true) * 2 + DockLayout.itemLength(on: .vertical) * 7 + DockLayout.itemSpacing * 6)
     }
@@ -96,13 +96,33 @@ final class ClauthRailTests: XCTestCase {
         PanelMetrics.showSidePercentages(false)
         PanelMetrics.putLabelAboveRing(false)
         // The caption still draws when the percent label is off, so the budget still holds it.
-        XCTAssertEqual(DockLayout.itemLength(on: .vertical), DockLayout.ringDiameter + DockLayout.captionHeight(on: .vertical))
+        XCTAssertEqual(DockLayout.itemLength(on: .vertical), DockLayout.ringDiameter + ClauthRailCaption.height(on: .vertical, spacing: DockLayout.ringToTextSpacing))
         XCTAssertEqual(DockLayout.ringOffsetInItem(on: .vertical), 0)
         PanelMetrics.putLabelAboveRing(true)
-        XCTAssertEqual(DockLayout.ringOffsetInItem(on: .vertical), DockLayout.captionHeight(on: .vertical), "the caption leads the ring with the label")
+        XCTAssertEqual(DockLayout.ringOffsetInItem(on: .vertical), ClauthRailCaption.height(on: .vertical, spacing: DockLayout.ringToTextSpacing), "the caption leads the ring with the label")
         PanelMetrics.showSidePercentages(true)
-        XCTAssertEqual(DockLayout.ringOffsetInItem(on: .vertical), DockLayout.percentTextHeight + DockLayout.ringToTextSpacing + DockLayout.captionHeight(on: .vertical))
+        XCTAssertEqual(DockLayout.ringOffsetInItem(on: .vertical), DockLayout.percentTextHeight + DockLayout.ringToTextSpacing + ClauthRailCaption.height(on: .vertical, spacing: DockLayout.ringToTextSpacing))
         XCTAssertEqual(DockLayout.ringOffsetInItem(on: .horizontal), PanelMetrics.topRailShowsPercentages ? DockLayout.percentTextHeight + DockLayout.ringToTextSpacing : 0, "no caption term across the top")
+    }
+
+
+    /// A `RailEntry` for one clauth account. Upstream's entry gained `slot` and
+    /// `title` (one ring per model group); a clauth ring is never split, so its
+    /// slot is the account's own and the title is the account name.
+    @MainActor
+    private func railEntry(
+        _ usage: ProviderUsage,
+        pin: String,
+        name: String,
+        in status: ClauthStatus
+    ) throws -> RailEntry {
+        let account = ClauthMapping.account(for: try ClauthFixture.profile(name, in: status))
+        return RailEntry(
+            usage: usage,
+            headline: try XCTUnwrap(usage.headlineWindow(preferring: pin)),
+            slot: RailSlot(account),
+            title: name
+        )
     }
 
     @MainActor
@@ -110,21 +130,26 @@ final class ClauthRailTests: XCTestCase {
         let status = try ClauthFixture.status()
         // fx-main is the active claude slot: weekly outside, 5h inside — both count.
         let main = ClauthMapping.usage(for: try ClauthFixture.profile("fx-main", in: status), freshness: .live)
-        let active = RailEntry(usage: main, headline: try XCTUnwrap(main.headlineWindow(preferring: "7d")))
+        let active = try railEntry(main, pin: "7d", name: "fx-main", in: status)
         XCTAssertEqual(ClauthRingExtras.alertWindows(active, status: status).map(\.id), ["7d", "5h"])
         // fx-cl is a spent BACKUP: the daemon's rotation business, never an alarm.
         let cl = ClauthMapping.usage(for: try ClauthFixture.profile("fx-cl", in: status), freshness: .live)
-        let backup = RailEntry(usage: cl, headline: try XCTUnwrap(cl.headlineWindow(preferring: "7d")))
+        let backup = try railEntry(cl, pin: "7d", name: "fx-cl", in: status)
         XCTAssertTrue(cl.windows.contains { $0.isExhausted })
         XCTAssertEqual(ClauthRingExtras.alertWindows(backup, status: status), [])
         // A spent active codex slot still alarms.
         let flipped = try ClauthFixture.status { $0["active_codex_profile"] = "fx-codex-xfx" }
         let xfx = ClauthMapping.usage(for: try ClauthFixture.profile("fx-codex-xfx", in: flipped), freshness: .live)
-        let codex = RailEntry(usage: xfx, headline: try XCTUnwrap(xfx.headlineWindow(preferring: "7d")))
+        let codex = try railEntry(xfx, pin: "7d", name: "fx-codex-xfx", in: flipped)
         XCTAssertEqual(ClauthRingExtras.alertWindows(codex, status: flipped).map(\.id), ["7d"])
         XCTAssertEqual(ClauthRingExtras.alertWindows(codex, status: status), [], "the same ring, not active ⇒ silent")
         // Pulse's own rings keep upstream's rule: the headline.
-        let primary = RailEntry(usage: .unavailable(.cursor, reason: .loading), headline: nil)
+        let primary = RailEntry(
+            usage: .unavailable(.cursor, reason: .loading),
+            headline: nil,
+            slot: RailSlot(AccountKey(.cursor)),
+            title: "Cursor"
+        )
         XCTAssertEqual(ClauthRingExtras.alertWindows(primary, status: status), [])
     }
 

@@ -5,103 +5,147 @@
 <h1 align="center">Pulse</h1>
 
 <p align="center">
-  <b>How much Claude Code, Codex, Antigravity, Cursor, OpenCode Go, Kimi Code, Ollama Cloud,<br>Z.ai, GLM, MiniMax or GitHub Copilot you have left.</b>
+  <b>A lightweight, elegant screen-edge monitor for your AI coding allowances.</b><br>
+  Real-time remaining quotas and rate limits for Claude Code, Codex, Cursor, GitHub Copilot, Antigravity, Grok, and more.
 </p>
 
 <p align="center">
-  <sub><b>macOS 14 Sonoma or newer</b> · Apple Silicon and Intel · <a href="README.zh-CN.md">简体中文</a></sub>
+  <a href="https://github.com/qunqin24/Pulse/releases/latest"><img src="https://img.shields.io/github/v/release/qunqin24/Pulse?color=black" alt="Latest Release"></a>
+  <img src="https://img.shields.io/badge/macOS-14.0%2B%20Sonoma-333333?logo=apple" alt="macOS 14+">
+  <a href="https://github.com/qunqin24/Pulse/actions/workflows/ci.yml"><img src="https://github.com/qunqin24/Pulse/actions/workflows/ci.yml/badge.svg" alt="CI Build"></a>
+  <img src="https://img.shields.io/badge/Swift-6.0-F05138?logo=swift&logoColor=white" alt="Swift 6.0">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue" alt="License"></a>
 </p>
 
 <p align="center">
-  <img src="Docs/demo.gif" width="330" alt="The Pulse rail against the left of the screen">
+  <sub><b>macOS 14 Sonoma or newer</b> · Apple Silicon & Intel Universal · <a href="README.zh-CN.md"><b>简体中文</b></a></sub>
 </p>
 
-Pulse is a small floating monitor that sits on the edge of your screen and
-shows how much of your AI-coding allowance is left, using the limits each
-provider reports for your account. There is no backend and no account of its
-own.
+<p align="center">
+  <img src="Docs/demo.gif" width="340" alt="Pulse floating rail docked against the screen edge">
+</p>
 
-## Install
+Pulse is an unobtrusive floating monitor that docks neatly along the edge of your screen. It shows remaining allowance from the figures each service reports — using that product's own client routes, not a Pulse server — with no Pulse account and no telemetry. Pulse does not invent usage percentages.
 
-Download the latest **`Pulse-x.y.z.dmg`** from
-[Releases](https://github.com/qunqin24/Pulse/releases/latest), open it, and drag
-Pulse into Applications.
+---
 
-Pulse isn't notarized, so macOS blocks the first launch. Open Pulse, dismiss
-the warning, then go to **System Settings → Privacy & Security** and click
-**Open Anyway**. Once only; later releases update themselves.
+## Key Features
 
-## What it does
+### At-a-Glance Status Rings
+- **Usage-Aware Colors**: Dynamic color gradients shift from green to amber, red, and deep red when exhausted — or set custom accent colors per account.
+- **Active Turn Indicator**: A subtle revolving dot indicates whether an agent is actively generating responses in real-time (Claude Code & Codex).
+- **Elapsed Window Arc**: An optional secondary outer arc visualizes how much time in the current rate-limit window has elapsed.
+- **Countdown Mode**: Toggle between showing spent quota (`75% used`) or remaining balance (`25% left`).
 
-- One ring per agent, coloured by usage: green, amber, red, deeper red when
-  spent. Click a ring to refresh that provider.
-- Docks to either side of the screen or along the top (above the menu bar), or
-  floats anywhere — including a second display, which it remembers. Folds to a
-  thin sliver when you're away; the sliver turns red when a limit is nearly
-  gone. Stays out of other apps' full-screen Spaces by default.
-- A mark on the ring shows whether that agent is working right now (Claude
-  Code and Codex only — the others keep no local transcript).
-- Starts with the last readings, marked with when they were taken.
-- Settings builds a spending history from Claude Code's and Codex's session
-  logs, priced at published API rates, plus a labelled estimate of what a
-  rate-limit window is worth.
-- Multiple accounts per provider: sign in to a second Claude Code or Codex
-  subscription and watch both side by side.
-- Configurable: ring order, spacing, panel size, percentages on/off per rail,
-  figure above or below the ring, custom ring colours per account, an optional
-  arc showing how much of the window's time has passed, refresh interval,
-  language (English and Simplified Chinese, no relaunch).
-- Adaptive refresh between 2 and 30 minutes; a switched-off provider is never
-  fetched.
+### Hover Details & Smart Forecasting
+- **Complete Limit Breakdown**: Hover over any ring to reveal a detailed card showing every reported quota pool, reset countdowns, and current window status.
+- **Burn-Rate Forecast**: Automatically projects whether your current pace will outlast the quota window and displays an estimated time-to-exhaustion (ETA) when risk is detected.
+- **Pin Primary Window**: Pin whichever limit matters most to the ring, or let Pulse automatically track the one closest to exhaustion.
 
-## Where the numbers come from
+### Native, Fluid & Non-Intrusive
+- **Flexible Edge Docking**: Dock to the left, right, or top of your screen (above the menu bar), or float freely anywhere.
+- **Multi-Monitor Native**: Drag Pulse to any secondary display; it remembers screen placement and gracefully returns if disconnected. Turn on **Follow the active display** and the single rail moves itself to whichever screen your pointer is on.
+- **Auto-Collapse**: Automatically folds into a razor-thin sliver when idle to eliminate distraction, glowing red only when quota runs critically low.
+- **Opt-In Notifications**: Off until you turn them on. Get told when a limit passes 75/80/90/95%, when the provider says it is spent, when a window you were warned about comes back, and when several checks in a row fail so the panel is quietly showing older figures. Each thing is said once: a limit already past the line when you switch this on is mentioned straight away, then never again until it resets or gets worse.
+- **Spaces-Friendly**: By default, stays out of your full-screen application Spaces.
+- **macOS Aesthetic**: Classic solid obsidian surface or native **Liquid Glass** on macOS 26+.
 
-| | Route | Note |
+### Multi-Account & Local Ledger
+- **Multi-Account Support**: Monitor multiple subscriptions for the same provider (Claude Code, Codex, Grok, Grok Bot) side-by-side with custom labels.
+- **On-Device Spending History**: Reconstructs your historical token expenditures from local CLI session transcripts, calculated against published API prices.
+- **Sixteen Providers**: Claude Code, Codex, Antigravity, Cursor, GitHub Copilot, Grok, Grok Bot, OpenCode Go, Kimi Code, Ollama Cloud, Z.ai, GLM Coding Plan, MiniMax (intl. and mainland), Volcengine, and Command Code.
+- **Scriptable**: `Pulse --json` prints the last readings — plan, every limit, reset times, and how old the figures are — for tmux, sketchybar, Raycast, or a shell prompt. It reads the cache and never fetches, so polling it costs nothing.
+- **Privacy First**: No Pulse servers, no Pulse account, and no telemetry. Requests go to the providers you already use (and follow macOS system proxy settings).
+
+<p align="center">
+  <img src="Docs/panel.png" height="300" alt="Detailed usage card beside rail">
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="Docs/settings.png" height="300" alt="Pulse Settings">
+</p>
+
+---
+
+## Supported Providers & Data Routes
+
+Pulse shows the figures each service reports. It never guesses percentages from local token counts. Routes differ by product (documented client APIs, editor logins, local language servers, pasted keys) — not one official public quota API for every row. Contributor detail: [Docs/providers/README.md](Docs/providers/README.md).
+
+| Provider | Data Route & Auth Method | Notes |
 |---|---|---|
-| **Claude Code** | The account's usage endpoint, using the login Claude Code already stored; falls back to the status line | — |
-| **Codex** | The endpoint Codex's own client uses; falls back to `codex app-server` | — |
-| **Antigravity** | The language server the editor runs locally | Reports only while Antigravity is open |
-| **Cursor** | The account's usage summary, via the login the editor already stored | Shown as the two pools on Cursor's account page |
-| **OpenCode Go** | An API key from Settings, or the login OpenCode's CLI already stored | — |
-| **Kimi Code** | An API key from Settings | — |
-| **Z.ai** | An API key from Settings | International storefront; a mainland BigModel key won't work here |
-| **GLM Coding Plan** | An API key from Settings, or one the GLM tooling already saved | Mainland storefront (`open.bigmodel.cn`) |
-| **MiniMax** / **MiniMax CN** | An API key from Settings | `api.minimax.io` and `api.minimaxi.com` |
-| **GitHub Copilot** | A sign-in, by device code | Asks for `read:user` and nothing else — not a pasted token |
-| **Ollama Cloud** | The signed-in settings page, with a session read from your browser | No quota API exists. See [Docs/ollama-cloud.md](Docs/ollama-cloud.md) |
+| **Claude Code** | Account OAuth usage endpoint; automatic fallbacks to Claude Desktop session & Status Line | Reads existing CLI/Desktop session; auto-falls back seamlessly |
+| **Codex** | Client usage endpoint; fallback to `codex app-server` | Reads local Codex credentials directly |
+| **Antigravity** | Local Language Server (LSP) | Active while the Antigravity editor is running |
+| **Cursor** | Cursor account usage summary API | Shows fast and slow request pools from existing editor login |
+| **Grok** | Grok Build CLI proxy (`cli-chat-proxy.grok.com`) | Single unified weekly pool shared across all Grok products |
+| **Grok Bot** | Cursor dashboard API | The xAI quota included with Cursor subscriptions |
+| **GitHub Copilot** | GitHub Device Code authentication | Requests minimal `read:user` scope; never accesses repositories |
+| **OpenCode Go** | API key or existing OpenCode CLI credentials | Fully configurable in Settings |
+| **Kimi Code** | Direct API key | Configured via Settings |
+| **Z.ai** | Direct API key | International storefront (`api.z.ai`) |
+| **GLM Coding Plan** | Direct API key or saved GLM tooling credentials | Mainland storefront (`open.bigmodel.cn`) |
+| **MiniMax / MiniMax CN** | Direct API key | Supports international (`minimax.io`) & mainland (`minimaxi.com`) |
+| **Ollama Cloud** | Browser session cookie | Read locally from browser. See [Docs/ollama-cloud.md](Docs/ollama-cloud.md) |
 
-Every figure is what the provider reports; Pulse never estimates a percentage
-from local token counts, and says so when a provider won't answer. A failed
-reading falls back to the last good one with its time shown. A window whose
-reset has passed is dropped.
+---
 
-## Privacy
+## Installation
 
-Pulse has no backend. Most providers are read with a login your own tools
-already stored on this Mac; the rest take an API key you paste in, and Ollama
-Cloud's session is read from your browser (scoped to `ollama.com` and its
-sign-in cookies only). Keys and sessions are stored encrypted in Pulse's own
-folder, owner-only. Spending history is computed on-device. Nothing is
-uploaded.
+1. Download the latest **`Pulse-x.y.z.dmg`** from [Releases](https://github.com/qunqin24/Pulse/releases/latest).
+2. Open the disk image and drag **Pulse** into your `Applications` folder.
 
-## Build from source
+> [!NOTE]
+> **macOS Gatekeeper First Launch**:  
+> Pulse is an open-source project without an Apple Developer certificate. On first launch, macOS may block the app:
+> - **Option 1 (GUI)**: Launch Pulse, dismiss the alert, open **System Settings → Privacy & Security**, and click **Open Anyway**.
+> - **Option 2 (Terminal)**:
+>   ```bash
+>   xattr -cr /Applications/Pulse.app
+>   ```
+> *(Subsequent updates via built-in Sparkle update smoothly without repeated prompts).*
 
-See [Docs/build-from-source.md](Docs/build-from-source.md).
+---
 
-## Layout
+## Privacy & Security
 
-All source is in `Sources/Pulse`, one SwiftUI view per file, with the provider
-marks under `Sources/Pulse/Resources`. [CLAUDE.md](CLAUDE.md) is the deeper
-walkthrough.
+Pulse is designed with strict local-first security principles:
+- **No Pulse backend**: There is no Pulse server, account, or telemetry. The app talks to the providers you already use; it does not insert its own proxy. macOS system proxy settings still apply.
+- **Local Credentials**: Reads credentials already stored locally by your development tools (`~/.claude`, `~/.codex`, Cursor storage, etc.) where that is how the product works; some providers need a key or sign-in you enter in Settings.
+- **Encrypted Local Storage**: Manually entered API keys and session tokens are encrypted and saved strictly in Pulse's local application directory with owner-only permissions.
+- **Code & Chat Privacy**: Pulse never reads your source code, terminal history, prompts, or LLM conversations.
 
-## Design
+---
 
-Thank you, [**Vinz** (@hivinz_)](https://x.com/hivinz_/status/2092996055248126353).
+## Build from Source
 
-Pulse is built from a concept he posted on X in August 2026: a rail of rings held against the edge of the screen, everything worth knowing in one glance and nothing else. That idea is his; most of the work here has been trying not to spoil it. He didn't build this and isn't responsible for it.
-for the concept this is built from.
+Pulse is built using native Swift and SwiftUI without heavy external dependencies.
+
+```bash
+# Clone the repository
+git clone https://github.com/qunqin24/Pulse.git
+cd Pulse
+
+# Build and run directly
+swift run Pulse
+
+# Or package into a native macOS app bundle
+./Scripts/bundle.sh
+```
+
+See [Docs/build-from-source.md](Docs/build-from-source.md) for toolchain setup. Shipping a release: [Docs/releasing.md](Docs/releasing.md).
+
+---
+
+## Contributing
+
+How the repo is documented, what must not regress, and how to update the right page: [CONTRIBUTING.md](CONTRIBUTING.md). Map of topic docs: [Docs/README.md](Docs/README.md).
+
+---
+
+## Design Attribution
+
+Pulse was inspired by a UI concept shared by [**Vinz** (@hivinz_)](https://x.com/hivinz_/status/2092996055248126353) on X in August 2026. Pulse is an independent implementation with its own interactions, functionality, animations, and visual details. Vinz is not affiliated with or responsible for Pulse.
+
+---
 
 ## License
 
-[Apache 2.0](LICENSE). Bundled third-party assets keep their own licenses; see
-[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+Licensed under [Apache 2.0](LICENSE). Bundled third-party assets retain their respective licenses; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

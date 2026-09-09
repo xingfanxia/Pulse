@@ -15,6 +15,8 @@
 "The usage rail at the edge of the screen." = "The usage rail at the edge of the screen.";
 "Hide in full screen" = "Hide in full screen";
 "Keep the floating panel out of full-screen apps." = "Keep the floating panel out of full-screen apps.";
+"Follow the active display" = "Follow the active display";
+"With more than one display, the rail moves to the one the pointer is on." = "With more than one display, the rail moves to the one the pointer is on.";
 "Left" = "Left";
 "Top" = "Top";
 "Percentages on top" = "Percentages on top";
@@ -107,6 +109,7 @@
 "Use the endpoint when possible, the other route when not." = "Use the endpoint when possible, the other route when not.";
 "Reads your account's limits with the login Claude Code saved." = "Reads your account's limits with the login Claude Code saved.";
 "Reads your account's limits with the login Codex saved." = "Reads your account's limits with the login Codex saved.";
+"Reads your account's limits with the login Grok saved." = "Reads your account's limits with the login Grok saved.";
 "Uses whatever Claude Code last reported to its status line." = "Uses whatever Claude Code last reported to its status line.";
 "Asks the Codex app server, which signs in on its own." = "Asks the Codex app server, which signs in on its own.";
 "Read usage from" = "Read usage from";
@@ -186,8 +189,14 @@
 /* Cursor */
 "Sign in to Cursor to see usage." = "Sign in to Cursor to see usage.";
 "Cursor's saved login was refused. Open Cursor to renew it." = "Cursor's saved login was refused. Open Cursor to renew it.";
+"Sign in to Grok to see usage." = "Sign in to Grok to see usage.";
+"Grok's saved login expired. Use Grok to renew it." = "Grok's saved login expired. Use Grok to renew it.";
+"This Cursor plan doesn't include Grok Bot." = "This Cursor plan doesn't include Grok Bot.";
 "Reads your account's limits with the login Cursor saved." = "Reads your account's limits with the login Cursor saved.";
 "Cursor's own login" = "Cursor's own login";
+"Grok's own login" = "Grok's own login";
+"Uses the login Grok's CLI already saved." = "Uses the login Grok's CLI already saved.";
+"Grok Bot is billed to your Cursor account." = "Grok Bot is billed to your Cursor account.";
 "Uses the login Cursor already saved." = "Uses the login Cursor already saved.";
 "Refresh" = "Refresh";
 "Pulse %@ is available" = "Pulse %@ is available";
@@ -220,6 +229,7 @@
 "Reads your quota from Ollama's own settings page." = "Reads your quota from Ollama's own settings page.";
 "Save" = "Save";
 "Monthly limit" = "Monthly limit";
+"estimated" = "estimated";
 "Last read" = "Last read";
 "Not yet" = "Not yet";
 "That key was refused. Check it in Settings." = "That key was refused. Check it in Settings.";
@@ -235,6 +245,7 @@
 "From bigmodel.cn. Stored encrypted on this Mac." = "From bigmodel.cn. Stored encrypted on this Mac.";
 "From platform.minimax.io. Stored encrypted on this Mac." = "From platform.minimax.io. Stored encrypted on this Mac.";
 "From platform.minimaxi.com. Stored encrypted on this Mac." = "From platform.minimaxi.com. Stored encrypted on this Mac.";
+"From commandcode.ai. Optional — Pulse can use the login Command Code saved. Stored encrypted on this Mac." = "From commandcode.ai. Optional — Pulse can use the login Command Code saved. Stored encrypted on this Mac.";
 "Couldn't connect the status line" = "Couldn't connect the status line";
 "~/.claude/settings.json couldn't be read, and Pulse won't overwrite a file it doesn't understand. Check it, then connect from Settings." = "~/.claude/settings.json couldn't be read, and Pulse won't overwrite a file it doesn't understand. Check it, then connect from Settings.";
 "Move %@ up" = "Move %@ up";
@@ -255,6 +266,7 @@
 "Code" = "Code";
 "Copied — paste it on the page that opened." = "Copied — paste it on the page that opened.";
 "Copied. Sign in there first if asked, then paste it." = "Copied. Sign in there first if asked, then paste it.";
+"Already on the page. Sign in there first if asked, then approve it." = "Already on the page. Sign in there first if asked, then approve it.";
 "Copy" = "Copy";
 "Open page" = "Open page";
 "Sign-in" = "Sign-in";
@@ -272,7 +284,7 @@
 "This page can be closed." = "This page can be closed.";
 "Sign-in failed. You can close this page." = "Sign-in failed. You can close this page.";
 "Signed in. You can close this page and go back to Pulse." = "Signed in. You can close this page and go back to Pulse.";
-"Read from each provider's own account. Pulse shows the figures they report and never estimates one of its own." = "Read from each provider's own account. Pulse shows the figures they report and never estimates one of its own.";
+"Read from each provider's own account. Pulse shows the figures they report; the two places it has to infer one, it says so on the figure." = "Read from each provider's own account. Pulse shows the figures they report; the two places it has to infer one, it says so on the figure.";
 "Pulse is built from a design he posted on X." = "Pulse is built from a design he posted on X.";
 "Open" = "Open";
 "under 15 minutes" = "under 15 minutes";
@@ -282,6 +294,67 @@
 "Runs out in %@" = "Runs out in %@";
 "Expected to last the window" = "Expected to last the window";
 "Won't last the window" = "Won't last the window";
+
+/* The Claude desktop app as a usage route */
+"Desktop app" = "Desktop app";
+"Uses the session the Claude desktop app is signed in with." = "Uses the session the Claude desktop app is signed in with.";
+"Sign in to the Claude desktop app to see usage." = "Sign in to the Claude desktop app to see usage.";
+"Pulse needs your keychain to read the Claude desktop app's session. Refresh to be asked again." = "Pulse needs your keychain to read the Claude desktop app's session. Refresh to be asked again.";
+"The Claude desktop app's session was refused. Open it and sign in again." = "The Claude desktop app's session was refused. Open it and sign in again.";
+
+/* Notifications */
+"Notifications" = "Notifications";
+"Off" = "Off";
+"Warn at" = "Warn at";
+"Notify when a limit passes this, and again when it is spent." = "Notify when a limit passes this, and again when it is spent.";
+"Turned off for Pulse in System Settings › Notifications." = "Turned off for Pulse in System Settings › Notifications.";
+"Notifications need the bundled app." = "Notifications need the bundled app.";
+"When a limit comes back" = "When a limit comes back";
+"Only for one you were warned about." = "Only for one you were warned about.";
+"When a reading stops arriving" = "When a reading stops arriving";
+"After several failed checks in a row, once per outage." = "After several failed checks in a row, once per outage.";
+"Can't be read" = "Can't be read";
+"The last few checks didn't get through, so the panel is showing older figures." = "The last few checks didn't get through, so the panel is showing older figures.";
+"%@ used." = "%@ used.";
+"%@ left." = "%@ left.";
+"This limit is spent." = "This limit is spent.";
+"This limit has reset." = "This limit has reset.";
+
+/* Settings sidebar search */
+"Search" = "Search";
+"No matches" = "No matches";
+
+/* Resetting the rail order */
+"Reset order" = "Reset order";
+"Back to the order Pulse ships with." = "Back to the order Pulse ships with.";
+"Reset" = "Reset";
+
+/* Volcengine / Volcengine Ark */
+"Install arkcli and run `arkcli auth login`, or add access keys in Settings." = "Install arkcli and run `arkcli auth login`, or add access keys in Settings.";
+"arkcli isn't signed in. Run `arkcli auth login`." = "arkcli isn't signed in. Run `arkcli auth login`.";
+"Signs Volcengine's usage API with the access keys you entered." = "Signs Volcengine's usage API with the access keys you entered.";
+"Asks arkcli, using the login it already saved." = "Asks arkcli, using the login it already saved.";
+"Access keys" = "Access keys";
+"AccessKeyID:SecretAccessKey, from Volcengine. Optional — arkcli needs none. Stored encrypted on this Mac." = "AccessKeyID:SecretAccessKey, from Volcengine. Optional — arkcli needs none. Stored encrypted on this Mac.";
+"Antigravity is open but didn't answer. Restarting it usually helps." = "Antigravity is open but didn't answer. Restarting it usually helps.";
+
+/* The second usage ring */
+"Second limit inside the ring" = "Second limit inside the ring";
+"A thinner ring for the next-fullest limit, where a provider has one." = "A thinner ring for the next-fullest limit, where a provider has one.";
+"That key works. The account has no Coding Plan running on it." = "That key works. The account has no Coding Plan running on it.";
+
+/* Usage history read from a provider's own statistics */
+"Reported by %@ for the whole account, so it covers every machine you use it on. It counts tokens only — the figures behind it cannot be turned into a cost." = "Reported by %@ for the whole account, so it covers every machine you use it on. It counts tokens only — the figures behind it cannot be turned into a cost.";
+"This account hasn't used anything yet, so there is nothing to chart." = "This account hasn't used anything yet, so there is nothing to chart.";
+"Asking %@" = "Asking %@";
+"Last 7 days" = "Last 7 days";
+
+/* Splitting one account's rail ring into one per model group */
+"A ring for each model group" = "A ring for each model group";
+"Gemini and the third-party models draw on separate allowances. One ring can only follow the busier of the two." = "Gemini and the third-party models draw on separate allowances. One ring can only follow the busier of the two.";
+"%@ didn't answer, so there is nothing to chart yet. Try again in a moment." = "%@ didn't answer, so there is nothing to chart yet. Try again in a moment.";
+"Add a key above and Pulse can read this account's history." = "Add a key above and Pulse can read this account's history.";
+"This account is switched off, so Pulse hasn't asked for its history." = "This account is switched off, so Pulse hasn't asked for its history.";
 
 /* clauth (fork) — accounts managed by the clauth daemon */
 "1 reset banked" = "1 reset banked";
