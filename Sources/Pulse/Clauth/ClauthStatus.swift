@@ -18,9 +18,15 @@ enum ClauthHarness: String, Sendable, Equatable, CaseIterable {
 /// the rail never goes blank over one renamed field. Pulse holds no token
 /// for any of these accounts: this file is the whole data plane.
 struct ClauthStatus: Decodable, Sendable, Equatable {
-    /// The on-disk schema this build reads. A newer daemon bumps it; the
-    /// watcher then publishes nothing rather than guessing at the shape.
-    static let supportedSchema = 1
+    /// The NEWEST on-disk schema this build reads. A daemon that bumps past it
+    /// publishes nothing rather than having its shape guessed at.
+    ///
+    /// Schema 2 (clauth `a37e81c9`) renamed `auth_status` `"expiring"` →
+    /// `"expired"` — the value always named a token already PAST expiry — and
+    /// added `"unknown"` for codex entries. A schema-1 daemon is otherwise a
+    /// strict subset, so both are read; `ClauthCardFooter.authLine` takes both
+    /// spellings of the one state.
+    static let supportedSchema = 2
 
     let schema: Int
     let generatedAt: String
@@ -40,7 +46,10 @@ struct ClauthStatus: Decodable, Sendable, Equatable {
     let clauthVersion: String?
     let profiles: [Profile]
 
-    var isSupported: Bool { schema == Self.supportedSchema }
+    /// Refuses only a daemon NEWER than this build, the rule clauth's own
+    /// contract states. An `==` gate also refused every older schema, and went
+    /// blind the moment the daemon bumped for a rename.
+    var isSupported: Bool { schema <= Self.supportedSchema }
 
     /// The published active slot for a harness. A codex switch is confirmed
     /// by THIS flipping — watching `active_profile` for one never confirms.
@@ -106,7 +115,8 @@ struct ClauthStatus: Decodable, Sendable, Equatable {
         let tier: String?
         let accountEmail: String?
         let hasLiveSession: Bool
-        /// `ok` | `expiring` | `broken`; absent reads as ok.
+        /// `ok` | `expired` | `broken` | `unknown` (schema 1 spelled `expired`
+        /// as `expiring`); absent reads as ok.
         let authStatus: String?
         /// `Fresh`, `Cached`, `RateLimited`, … or nil before the first fetch.
         let fetchStatus: String?

@@ -386,7 +386,7 @@
 "not in chain" = "不在链中";
 "rolling token" = "滚动令牌";
 "login broken — re-authenticate" = "登录已失效，请重新登录";
-"login expiring — re-authenticate soon" = "登录即将过期，请尽快重新登录";
+"login expired — re-authenticate soon" = "登录已过期，请尽快重新登录";
 "auto-switch rotates at the session boundary" = "自动切换会在会话边界轮换";
 "%@ hit its 5h window" = "%@ 的 5 小时窗口已用尽";
 "%@ hit its weekly window" = "%@ 的每周窗口已用尽";

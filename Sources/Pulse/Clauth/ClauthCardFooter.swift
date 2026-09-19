@@ -105,7 +105,9 @@ struct ClauthCardFooter: View {
     nonisolated static func authLine(for profile: ClauthStatus.Profile) -> String? {
         switch profile.authStatus {
         case "broken": String.localized("login broken — re-authenticate")
-        case "expiring": String.localized("login expiring — re-authenticate soon")
+        // One state under two spellings: schema 1 called a token already PAST
+        // expiry "expiring", schema 2 renamed it to say so. Both read as expired.
+        case "expired", "expiring": String.localized("login expired — re-authenticate soon")
         default: nil
         }
     }

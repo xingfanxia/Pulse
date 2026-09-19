@@ -57,7 +57,11 @@ final class ClauthCardFooterTests: XCTestCase {
         XCTAssertEqual(ClauthCardFooter.stateLine(for: try ClauthFixture.profile("fx-main", in: status), status: status), "active · chain #1 · switches at 90% · rolling token")
         XCTAssertEqual(ClauthCardFooter.stateLine(for: try ClauthFixture.profile("fx-backup", in: status), status: status), "not in chain · rolling token")
         XCTAssertEqual(ClauthCardFooter.stateLine(for: try ClauthFixture.profile("fx-codex-cl", in: status), status: status), "chain #3 · switches at 95% · last resort")
-        XCTAssertEqual(ClauthCardFooter.authLine(for: try ClauthFixture.profile("fx-backup", in: status)), "login expiring — re-authenticate soon")
+        XCTAssertEqual(ClauthCardFooter.authLine(for: try ClauthFixture.profile("fx-backup", in: status)), "login expired — re-authenticate soon")
+        // Schema 2's spelling of the same state reads the same way.
+        XCTAssertEqual(ClauthCardFooter.authLine(for: try ClauthFixture.profile(["auth_status": "expired"])), "login expired — re-authenticate soon")
+        // A codex entry with no usage cache yet is not a login problem.
+        XCTAssertNil(ClauthCardFooter.authLine(for: try ClauthFixture.profile(["auth_status": "unknown"])))
         XCTAssertEqual(ClauthCardFooter.authLine(for: try ClauthFixture.profile(["auth_status": "broken"])), "login broken — re-authenticate")
         XCTAssertNil(ClauthCardFooter.authLine(for: try ClauthFixture.profile("fx-main", in: status)))
     }

@@ -386,7 +386,7 @@
 "not in chain" = "not in chain";
 "rolling token" = "rolling token";
 "login broken — re-authenticate" = "login broken — re-authenticate";
-"login expiring — re-authenticate soon" = "login expiring — re-authenticate soon";
+"login expired — re-authenticate soon" = "login expired — re-authenticate soon";
 "auto-switch rotates at the session boundary" = "auto-switch rotates at the session boundary";
 "%@ hit its 5h window" = "%@ hit its 5h window";
 "%@ hit its weekly window" = "%@ hit its weekly window";

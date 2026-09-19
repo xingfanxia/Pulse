@@ -101,7 +101,7 @@ final class ClauthWatcherTests: XCTestCase {
 
     func testUnsupportedSchemaPublishesNothing() throws {
         var object = try ClauthFixture.json()
-        object["schema"] = 2
+        object["schema"] = ClauthStatus.supportedSchema + 1
         try JSONSerialization.data(withJSONObject: object).write(to: ClauthPaths.statusFile(in: home))
         let (settings, store, watcher) = try make()
         watcher.tick()

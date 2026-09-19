@@ -72,8 +72,8 @@ final class ClauthStatusTests: XCTestCase {
         XCTAssertNil(status.activeCodexProfile)
     }
 
-    func testSchemaTwoIsUnsupported() throws {
-        let status = try ClauthFixture.status { $0["schema"] = 2 }
+    func testASchemaNewerThanThisBuildIsUnsupported() throws {
+        let status = try ClauthFixture.status { $0["schema"] = ClauthStatus.supportedSchema + 1 }
         XCTAssertFalse(status.isSupported)
         XCTAssertEqual(ClauthMapping.roster(status), [])
         XCTAssertEqual(ClauthMapping.readings(status, freshness: .live), [:])
@@ -110,5 +110,12 @@ final class ClauthStatusTests: XCTestCase {
         XCTAssertNotNil(ClauthISO.parse("2026-09-07T02:26:04Z"))
         XCTAssertNil(ClauthISO.parse("yesterday"))
         XCTAssertNil(ClauthISO.parse(nil))
+    }
+
+    /// UPS-18: the daemon moved to schema 2 for one rename. An `==` gate made
+    /// Pulse blind over a value it reads through `authLine`, which takes both.
+    func testBothKnownSchemasAreRead() throws {
+        XCTAssertTrue(try ClauthFixture.status { $0["schema"] = 1 }.isSupported)
+        XCTAssertTrue(try ClauthFixture.status { $0["schema"] = 2 }.isSupported)
     }
 }
