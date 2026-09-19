@@ -30,7 +30,7 @@ swift build -Xswiftc -swift-version -Xswiftc 6 2>&1 | tee "$build_log" | grep -E
 grep -q "Build complete" "$build_log" || fail "build did not complete"
 warnings=$(grep -c "warning:" "$build_log" || true)
 echo "warnings: $warnings"
-[ "$warnings" -eq 0 ] || fail "$warnings warning(s) — treat every warning as an error (upstream CLAUDE.md)"
+[ "$warnings" -eq 0 ] || fail "$warnings warning(s) — treat every warning as an error (upstream AGENTS.md)"
 
 step "2/7 swift test"
 test_log=$(mktemp)

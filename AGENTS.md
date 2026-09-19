@@ -1,6 +1,14 @@
-# CLAUDE.md
+# Pulse — agent guide
 
-AI entry for this repo. Human workflow, evidence rules, and the docs map live in [CONTRIBUTING.md](CONTRIBUTING.md) and [Docs/README.md](Docs/README.md). Change the **authoritative topic doc** in the same patch as the code; do not grow this file.
+## Project scale and verification
+
+**Profile: personal quota-monitor app.** Swift macOS quota monitor. Inspect the affected native interaction or relevant provider/rule test. Keychain/session reads, notifications and updater changes need targeted checks. Preserve real-input requirements for hover/drag claims and the existing CI/release SDK; small edits need no broad platform campaign.
+
+- The requested behavior/questions define completion. Reviews are read-only unless fixes are requested; report unrelated findings briefly without adding tasks or test backfill.
+- Use the smallest existing check that proves the change. Add tests for a concrete regression or consequential boundary; do not impose blanket TDD, new coverage targets, full suites, plans or reviewers. Preserve configured CI and actual release gates; reuse still-valid results.
+- Keep the existing structure. Internal contract errors should be clear; add retries, fallbacks or compatibility layers only for an observed external failure or supported contract. Keep secrets private and inspect security only at boundaries changed by this task.
+
+AI entry for this repo. Human workflow, evidence rules, and the docs map live in [CONTRIBUTING.md](CONTRIBUTING.md) and [Docs/README.md](Docs/README.md). Update the **authoritative topic doc** when the patch changes its documented behavior; do not grow this file.
 
 > **This fork (xingfanxia/Pulse) carries a clauth integration** — every clauth-managed account as a ring, plus clauth's control face. Design, rules and the frozen graders: `Docs/clauth/PLAN.md`; the running contract: `Docs/clauth/GOAL-PROMPTS.md`; ledgers under `.agent/`. Everything below is upstream's and stays theirs.
 
@@ -30,7 +38,7 @@ A clean `swift build` is not the Xcode check. Actor-isolation mistakes can be wa
 swift build -Xswiftc -swift-version -Xswiftc 6
 ```
 
-Treat remaining warnings as failures. macOS 14+, Swift tools 6.0, no linter. **`swift test` exists** — rules, cache reconciliation and provider fixtures; run it, and add to it when you change a rule. [Docs/testing.md](Docs/testing.md). CI and release need the macOS 26 SDK (`glassEffect`).
+Treat remaining warnings as failures. macOS 14+, Swift tools 6.0, no linter. **`swift test` exists** — rules, cache reconciliation and provider fixtures. Use the affected suite/filter for a rule change, adding a regression case when the changed behavior needs it; use the full suite for broad or release changes. [Docs/testing.md](Docs/testing.md). CI and release need the macOS 26 SDK (`glassEffect`).
 
 ## Do not violate
 

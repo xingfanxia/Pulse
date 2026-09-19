@@ -1,6 +1,6 @@
 # Docs
 
-Maintained map. Change the topic file that owns a behaviour in the same patch as the code. [CLAUDE.md](../CLAUDE.md) is a short AI entry; [CONTRIBUTING.md](../CONTRIBUTING.md) is the human process.
+Maintained map. Change the topic file that owns a behaviour in the same patch as the code. [AGENTS.md](../AGENTS.md) is a short AI entry; [CONTRIBUTING.md](../CONTRIBUTING.md) is the human process.
 
 `Docs/` is the only docs tree. Investigation notes that are not “how it works now” stay here as historical pages rather than being folded into current architecture.
 
