@@ -30,6 +30,36 @@ enum ClauthChainEdit {
         return value
     }
 
+    // MARK: Claude plans with no 5h limit
+
+    /// Whether a chain member is offered the 5h leave-at threshold. False on a
+    /// plan the daemon flags `no_five_hour_limit`: it still stores and accepts
+    /// a threshold, but with no 5h window nothing reads it. Keyed on the FLAG,
+    /// never on a missing window, so a plan that has the limit keeps its
+    /// control through a tick that dropped the window. The weekly line and the
+    /// gates stay — the walk reads every one of them.
+    static func offersFiveHourThreshold(_ profile: ClauthStatus.Profile) -> Bool {
+        !profile.noFiveHourLimit
+    }
+
+    /// The weekly line clauth's walk judges this member's 7d window at —
+    /// `fallback::member_weekly_line`: its own override, else the chain-wide
+    /// line, and the 100% hard cap when its weekly gate is off.
+    static func memberWeeklyLine(_ chain: ClauthStatus.Fallback, status: ClauthStatus) -> Double {
+        guard chain.checkWeekly else { return 100 }
+        return chain.weeklyThreshold ?? status.weeklySwitchThreshold ?? defaultWeeklyLine
+    }
+
+    /// The claude chain section's subtitle: the 5h rule, unless every member
+    /// of the chain is on a plan with no 5h limit — then only the week moves it.
+    static func claudeLeaveRule(_ members: [ClauthStatus.Profile]) -> String {
+        let chain = members.filter(\.inChain)
+        if !chain.isEmpty, chain.allSatisfy(\.noFiveHourLimit) {
+            return String.localized("Auto-switch leaves an account at its weekly line.")
+        }
+        return String.localized("Auto-switch leaves an account at its 5h threshold.")
+    }
+
     /// "90%" — no trailing `.0` on whole percents.
     static func percentLabel(_ value: Double) -> String {
         value.truncatingRemainder(dividingBy: 1) == 0 ? "\(Int(value))%" : "\(value)%"

@@ -381,6 +381,7 @@
 "Signing in to %@ — finish in your browser…" = "Signing in to %@ — finish in your browser…";
 "active" = "active";
 "chain #%@ · switches at %@" = "chain #%@ · switches at %@";
+"chain #%@ · switches at %@ of the week" = "chain #%@ · switches at %@ of the week";
 "last resort" = "last resort";
 "disarmed" = "disarmed";
 "not in chain" = "not in chain";
@@ -452,6 +453,7 @@
 "Active account" = "Active account";
 "Rotates at the session boundary when the active login is limited." = "Rotates at the session boundary when the active login is limited.";
 "Auto-switch leaves an account at its 5h threshold." = "Auto-switch leaves an account at its 5h threshold.";
+"Auto-switch leaves an account at its weekly line." = "Auto-switch leaves an account at its weekly line.";
 "Remove" = "Remove";
 "Add to chain" = "Add to chain";
 "Auto-switch leaves this account at this 5h usage." = "Auto-switch leaves this account at this 5h usage.";

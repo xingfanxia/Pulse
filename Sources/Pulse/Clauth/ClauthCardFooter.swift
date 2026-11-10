@@ -92,7 +92,14 @@ struct ClauthCardFooter: View {
             parts.append(String.localized("active"))
         }
         if let chain = profile.fallback {
-            parts.append(String.localized("chain #\("\(chain.position + 1)") · switches at \("\(Int(chain.threshold.rounded()))%")"))
+            if profile.noFiveHourLimit {
+                // No 5h window to leave at: the stored 5h threshold is inert,
+                // so quote the weekly line the walk actually judges.
+                let line = ClauthChainEdit.percentLabel(ClauthChainEdit.memberWeeklyLine(chain, status: status))
+                parts.append(String.localized("chain #\("\(chain.position + 1)") · switches at \(line) of the week"))
+            } else {
+                parts.append(String.localized("chain #\("\(chain.position + 1)") · switches at \("\(Int(chain.threshold.rounded()))%")"))
+            }
             if chain.lastResort { parts.append(String.localized("last resort")) }
             if !chain.armed { parts.append(String.localized("disarmed")) }
         } else {

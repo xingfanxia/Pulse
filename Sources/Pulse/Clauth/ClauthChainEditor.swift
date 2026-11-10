@@ -18,7 +18,7 @@ struct ClauthHarnessSection: View {
                 String.localized("Active account"),
                 subtitle: harness == .codex
                     ? String.localized("Rotates at the session boundary when the active login is limited.")
-                    : String.localized("Auto-switch leaves an account at its 5h threshold.")
+                    : ClauthChainEdit.claudeLeaveRule(members)
             ) {
                 Text(status.activeName(for: harness) ?? "—")
                     .font(.system(size: 12, weight: .medium))
@@ -62,7 +62,9 @@ struct ClauthChainRow: View {
         ) {
             if let chain = profile.fallback {
                 HStack(spacing: 6) {
-                    thresholdMenu(chain)
+                    if ClauthChainEdit.offersFiveHourThreshold(profile) {
+                        thresholdMenu(chain)
+                    }
                     weeklyMenu(chain)
                     gatesMenu(chain)
                     Button { watcher.actions.fallbackMove(profile.name, up: true) } label: { Image(systemName: "chevron.up") }

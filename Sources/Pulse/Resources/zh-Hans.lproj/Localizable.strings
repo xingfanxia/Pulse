@@ -381,6 +381,7 @@
 "Signing in to %@ — finish in your browser…" = "正在登录 %@，请在浏览器中完成…";
 "active" = "当前使用";
 "chain #%@ · switches at %@" = "链 #%@ · %@ 时切换";
+"chain #%@ · switches at %@ of the week" = "链 #%@ · 本周用量 %@ 时切换";
 "last resort" = "最后手段";
 "disarmed" = "未启用";
 "not in chain" = "不在链中";
@@ -452,6 +453,7 @@
 "Active account" = "当前账号";
 "Rotates at the session boundary when the active login is limited." = "当前登录被限流时在会话边界轮换。";
 "Auto-switch leaves an account at its 5h threshold." = "自动切换在 5 小时阈值处离开账号。";
+"Auto-switch leaves an account at its weekly line." = "自动切换在每周阈值处离开账号。";
 "Remove" = "移除";
 "Add to chain" = "加入链";
 "Auto-switch leaves this account at this 5h usage." = "5 小时用量到此即切走。";

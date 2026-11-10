@@ -137,6 +137,13 @@ struct ClauthStatus: Decodable, Sendable, Equatable {
         let codexRateLimitReached: String?
         /// Banked reset credits; nil until a poll has carried a count.
         let codexResetCredits: Int?
+        /// The last usage read says this Claude plan has NO 5-hour limit
+        /// (clauth `no_five_hour_limit`; the top plan lost it in 2026-11 and
+        /// publishes only `7d` and `7d fable`). Keys the 5h CONTROLS only, so
+        /// a plan that has the limit keeps its knob through a tick that
+        /// dropped the window. Absent on older daemons, and on codex rows,
+        /// reads false.
+        let noFiveHourLimit: Bool
 
         var isThirdParty: Bool { !["anthropic", "openai"].contains(provider) }
         var authBroken: Bool { authStatus == "broken" }
@@ -239,6 +246,7 @@ extension ClauthStatus.Profile: Decodable {
         case codexSnapshotAt = "codex_snapshot_at"
         case codexRateLimitReached = "codex_rate_limit_reached"
         case codexResetCredits = "codex_reset_credits"
+        case noFiveHourLimit = "no_five_hour_limit"
     }
 
     init(from decoder: Decoder) throws {
@@ -267,6 +275,7 @@ extension ClauthStatus.Profile: Decodable {
         codexSnapshotAt = try c.decodeIfPresent(String.self, forKey: .codexSnapshotAt)
         codexRateLimitReached = try c.decodeIfPresent(String.self, forKey: .codexRateLimitReached)
         codexResetCredits = try c.decodeIfPresent(Int.self, forKey: .codexResetCredits)
+        noFiveHourLimit = try c.decodeIfPresent(Bool.self, forKey: .noFiveHourLimit) ?? false
     }
 }
 
